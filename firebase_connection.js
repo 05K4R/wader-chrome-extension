@@ -8,13 +8,33 @@ var firebaseConn = {};
 		storageBucket: "wader-d8a71.appspot.com",
 		messagingSenderId: "68541536183"
 	};
+
 	firebase.initializeApp(config);
 
-	this.valueExists = function(ref, value, callback) {
-		firebase.database().ref(ref).child(value).once('value', function(snapshot) {
-			var exists = (snapshot.val() !== null);
-			callback(exists);
-		})
+	this.valueExists = function(ref, value) {
+		return this.getObject(ref, value)
+			.then(function(result) {
+				return result !== null;
+			});
+	}
+
+	this.getObject = function(ref, value) {
+		return firebase.database().ref(ref).child(value).once('value')
+			.then(function(snapshot) {
+				return snapshot.val()
+			});
+	}
+
+	this.setObject = function(ref, object) {
+		return firebase.database().ref(ref).set(object);
+	}
+
+	this.updateObject = function(ref, object) {
+		return firebase.database().ref(ref).update(object);
+	}
+
+	this.updateMultiple = function(updates) {
+		return firebase.database().ref().update(updates);
 	}
 
 	this.listenToValue = function(ref, callback) {
