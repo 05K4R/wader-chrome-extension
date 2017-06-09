@@ -1,7 +1,7 @@
-var firebaseConn = {};
+const fbConn = {};
 (function() {
 	// Initialize Firebase
-	var config = {
+	const config = {
 		apiKey: "AIzaSyBn753lEWxDjU9E_rCgF7Nrxjt1tdiA4TI",
 		authDomain: "wader-d8a71.firebaseapp.com",
 		databaseURL: "https://wader-d8a71.firebaseio.com",
@@ -14,7 +14,7 @@ var firebaseConn = {};
 	this.valueExists = function(ref, value) {
 		return this.getObject(ref, value)
 			.then(function(result) {
-				return result !== null;
+				return Promise.resolve(result !== null);
 			});
 	}
 
@@ -44,7 +44,7 @@ var firebaseConn = {};
 	}
 
 	this.stopListenToValue = function(ref, callback) {
-		firebase.database().ref(ref).on('value', function(snapshot) {
+		firebase.database().ref(ref).off('value', function(snapshot) {
 			callback(snapshot.val());
 		});
 	}
@@ -52,4 +52,4 @@ var firebaseConn = {};
 	this.listenToAuth = function(callback) {
 		firebase.auth().onAuthStateChanged(callback);
 	}
-}).apply(firebaseConn);
+}).apply(fbConn);

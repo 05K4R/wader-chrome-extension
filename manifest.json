@@ -16,7 +16,7 @@
 	"content_scripts": [
 		{
 			"matches": [ "*://soundcloud.com/stream"],
-			"js": ["soundcloud_content.js"],
+			"js": ["soundcloud/soundcloud_content.js"],
 			"run_at": "document_end"
 		}
 	],
