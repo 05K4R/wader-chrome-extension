@@ -1,9 +1,58 @@
 const storage = {};
 (function() {
+    this.addGroup = function(type, name) {
+        console.log('storage: add group');
+
+        const uid = currentUser.getUid();
+
+        let groupRef = '';
+        if (type == 'category' || type == 'categories') {
+            groupRef = '/categories/' + uid + '/';
+        } else if (type == 'label' || type == 'labels') {
+            groupRef = '/labels/' + uid + '/';
+        } else {
+            console.log('storage: type "' + type + '" not recognized');
+            return;
+        }
+
+        const group = {
+            name: name
+        }
+
+        fbConn.pushObject(groupRef, group);
+    }
+
+    this.updateGroup = function(type, group) {
+        console.log('storage: update group');
+
+        const uid = currentUser.getUid();
+
+        let groupRef = '';
+        if (type == 'category' || type == 'categories') {
+            groupRef = '/categories/' + uid + '/' + group.id + '/';
+        } else if (type == 'label' || type == 'labels') {
+            groupRef = '/labels/' + uid + '/' + group.id + '/';
+        } else {
+            console.log('storage: type "' + type + '" not recognized');
+            return;
+        }
+
+        let updates = {};
+        updates[groupRef + 'id'] = group.id;
+        updates[groupRef + 'name'] = group.name;
+
+        // Remove all undefined fields
+        updates = JSON.parse(JSON.stringify(updates));
+
+        return fbConn.updateMultiple(updates).then(function() {
+            return Promise.resolve(group);
+        });
+    }
+
     this.updateTrack = function(track) {
         console.log('storage: update track');
 
-        const uid = currentUser.getUid()
+        const uid = currentUser.getUid();
 
         let updates = {};
 
@@ -38,7 +87,7 @@ const storage = {};
         }
 
         // Remove all undefined fields
-        updates = JSON.parse(JSON.stringify(updates))
+        updates = JSON.parse(JSON.stringify(updates));
 
         return fbConn.updateMultiple(updates).then(function() {
             return Promise.resolve(track);

@@ -29,12 +29,15 @@ const groups = {};
         model.categoriesInitialized(true);
 	}
 
-    this.getAvailableCategories = function() {
-        return this.availableCategories;
-    }
-
-    this.getAvailableLabels = function() {
-        return this.availableLabels;
+    this.getAvailableGroups = function(group) {
+        if (group == 'categories' || group == 'category') {
+            return this.availableCategories;
+        } else if (group == 'labels' || group == 'label') {
+            return this.availableLabels;
+        } else {
+            console.log('groups: type "' + group + '" not recognized');
+            return;
+        }
     }
 
     this.setAvailableGroups = function(type, groups) {
@@ -55,8 +58,27 @@ const groups = {};
         } else if (type == 'label' || type == 'labels') {
             this.availableLabels = newGroups;
         } else {
-            console.log('groups: type not recognized: ' + type);
+            console.log('groups: type "' + type + '" not recognized');
             return;
         }
+    }
+
+    this.deleteGroup = function(type, id) {
+        console.log('groups: delete group');
+
+        return fbConn.deleteRef(
+            '/' + type + '/' + currentUser.getUid() + '/' + id
+        );
+    }
+
+    this.updateGroup = function(type, group) {
+        console.log('groups: update group');
+
+        storage.updateGroup(type, group);
+    }
+
+    this.addGroup = function(type, name) {
+        console.log('groups: add group');
+        storage.addGroup(type, name);
     }
 }).apply(groups);

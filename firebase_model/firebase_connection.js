@@ -8,7 +8,6 @@ const fbConn = {};
 		storageBucket: "wader-d8a71.appspot.com",
 		messagingSenderId: "68541536183"
 	};
-
 	firebase.initializeApp(config);
 
 	this.valueExists = function(ref, value) {
@@ -25,6 +24,10 @@ const fbConn = {};
 			});
 	}
 
+	this.pushObject = function(ref, object) {
+		return firebase.database().ref(ref).push(object);
+	}
+
 	this.setObject = function(ref, object) {
 		return firebase.database().ref(ref).set(object);
 	}
@@ -35,6 +38,10 @@ const fbConn = {};
 
 	this.updateMultiple = function(updates) {
 		return firebase.database().ref().update(updates);
+	}
+
+	this.deleteRef = function(ref) {
+		return firebase.database().ref(ref).remove();
 	}
 
 	this.listenToValue = function(ref, callback) {

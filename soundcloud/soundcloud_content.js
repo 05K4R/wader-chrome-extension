@@ -38,11 +38,11 @@ const soundcloudContent = {};
             let repost = null;
             if (streamTrackElement) {
                 const uploaderNameElement = streamTrackElement.querySelectorAll('.soundTitle__usernameText')[0];
-                uploaderName = uploaderNameElement.innerHTML;
+                uploaderName = uploaderNameElement.innerText;
 
                 const usernameLinkElement = streamTrackElement.querySelectorAll('.soundContext__usernameLink')[0];
                 const usernameLink = usernameLinkElement.getAttribute('href');
-                const username = usernameLinkElement.innerHTML;
+                const username = usernameLinkElement.innerText;
 
                 const repostElements = streamTrackElement.querySelectorAll('.soundContext__repost');
                 const reposted = repostElements.length !== 0;
