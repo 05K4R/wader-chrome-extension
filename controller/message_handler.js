@@ -1,27 +1,42 @@
 const messageHandler = {};
 (function() {
-	chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-		console.log('messageHandler: new message with subject "'
-			+ request.subject + '"');
+    /*firebase.initializeApp({
+        apiKey: "AIzaSyBn753lEWxDjU9E_rCgF7Nrxjt1tdiA4TI",
+        authDomain: "wader-d8a71.firebaseapp.com",
+        databaseURL: "https://wader-d8a71.firebaseio.com",
+        projectId: "wader-d8a71",
+        storageBucket: "wader-d8a71.appspot.com",
+        messagingSenderId: "68541536183"
+    });*/
 
-		if (request.subject == 'newCurrentTrack') {
-			model.newCurrentTrack(request.track);
-		} else if (request.subject == 'getAvailableGroups') {
-			const response = {
-				categories: model.getAvailableGroups('categories'),
-				labels: model.getAvailableGroups('labels'),
-			}
-			sendResponse(response);
-		} else if (request.subject == 'updateGroup') {
-			model.updateGroup(request.type, request.group);
-		} else if (request.subject == 'deleteGroup') {
-			model.deleteGroup(request.type, request.id);
-		} else if (request.subject == 'addGroup') {
-			model.addGroup(request.type, request.name);
-		} else {
-			console.log('messageHandler: message subject "'
-				+ request.subject + '" not found');
-			return;
-		}
-	});
+    const soundcloudModel = new SoundcloudModel();
+    const groupModel = new GroupModel();
+
+    chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+        console.log('messageHandler: new message with subject "'
+            + request.subject + '"');
+
+        if (request.subject == 'addLabels') {
+            groupModel.addLabels(request.labels);
+        } else if (request.subject == 'addCategories') {
+            groupModel.addCategories(request.categories);
+        } else if (request.subject == 'setCurrentlyPlayingTrack') {
+            soundcloudModel.setCurrentlyPlayingTrack(request.track);
+        } else if (request.subject == 'setCurrentlyPlayingRepostedTrack') {
+            soundcloudModel.setCurrentlyPlayingRepostedTrack(request.repost);
+        } else if (request.subject == 'setCategoryOnCurrentlyPlayingTrack') {
+            const category = groupModel.getCategory(request.categoryId);
+            soundcloudModel.setCategoryOnCurrentlyPlayingTrack(category);
+        } else if (request.subject == 'addLabelToCurrentlyPlayingTrack') {
+            const label = groupModel.getLabel(request.labelId);
+            soundcloudModel.addLabelToCurrentlyPlayingTrack(label);
+        } else if (request.subject == 'removeLabelFromCurrentlyPlayingTrack') {
+            const label = groupModel.getLabel(request.labelId);
+            soundcloudModel.removeLabelFromCurrentlyPlayingTrack(label);
+        } else {
+           console.log('messageHandler: message subject "'
+                + request.subject + '" not found');
+           return;
+       }
+    });
 }).apply(messageHandler);

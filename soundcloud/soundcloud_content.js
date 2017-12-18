@@ -33,12 +33,22 @@ const soundcloudContent = {};
                 }
         	}
 
+            const track = {
+                url: trackUrl,
+                name: trackName,
+                uploader: {
+                    url: uploaderUrl,
+                }
+            }
+
             let uploaderName = null;
             let reposterUrl = null;
             let repost = null;
             if (streamTrackElement) {
                 const uploaderNameElement = streamTrackElement.querySelectorAll('.soundTitle__usernameText')[0];
                 uploaderName = uploaderNameElement.innerText;
+
+                track.uploader.uploaderName = uploaderName;
 
                 const usernameLinkElement = streamTrackElement.querySelectorAll('.soundContext__usernameLink')[0];
                 const usernameLink = usernameLinkElement.getAttribute('href');
@@ -51,10 +61,11 @@ const soundcloudContent = {};
                     reposterName = username;
 
                     const timeElement = streamTrackElement.querySelectorAll('.relativeTime')[0];
-                    repostTime = timeElement.getAttribute('datetime');
+                    repostTime = Date.parse(timeElement.getAttribute('datetime'));
 
                     repost = {
                         time: repostTime,
+                        track: track,
                         reposter: {
                             url: reposterUrl,
                             name: reposterName,
@@ -63,21 +74,17 @@ const soundcloudContent = {};
                 }
             }
 
-            const track = {
-                url: trackUrl,
-                name: trackName,
-                uploader: {
-                    url: uploaderUrl,
-                    name: uploaderName,
-                },
-                repost: repost,
-            }
-
-            console.log(track);
-
-            const message = {
-                subject: 'newCurrentTrack',
-                track: track,
+            let message = null;
+            if (repost) {
+                message = {
+                    subject: 'setCurrentlyPlayingRepostedTrack',
+                    repost: repost,
+                }
+            } else {
+                message = {
+                    subject: 'setCurrentlyPlayingTrack',
+                    track: track,
+                }
             }
 
             chrome.runtime.sendMessage(message);
