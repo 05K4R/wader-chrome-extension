@@ -1,4 +1,4 @@
-class FirebaseGroupModel extends GroupModel {
+class FirestoreGroupModel extends GroupModel {
     constructor() {
         super();
         this.db = firebase.firestore();
@@ -9,9 +9,13 @@ class FirebaseGroupModel extends GroupModel {
         return super.addCategories(rawCategories);
     }
 
-    addCategory(rawCategory) {
-        // TODO
-        return super.addCategory(rawCategory);
+    async addCategory(rawCategory) {
+        const category = new Group(rawCategory);
+        const jsonCategory = JSON.parse(JSON.stringify(jsonCategory));
+        return this.db
+            .collection('categories')
+            .doc(category.id)
+            .set(jsonCategory);
     }
 
     removeCategory(categoryId) {

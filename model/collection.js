@@ -4,8 +4,8 @@ class Collection {
     }
 
     add(object) {
-        this.allObjects.set(object.id, object);
-        return this.get(object.id);
+        this.allObjects.set(object.getId(), object);
+        return this;
     }
 
     get(objectId) {
@@ -13,7 +13,7 @@ class Collection {
     }
 
     getAll() {
-        return Array.from(this.allObjects);
+        return Array.from(this.allObjects.values());
     }
 
     has(objectId) {
@@ -22,5 +22,6 @@ class Collection {
 
     remove(objectId) {
         this.allObjects.delete(objectId);
+        return this;
     }
 }

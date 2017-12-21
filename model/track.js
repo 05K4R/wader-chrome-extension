@@ -1,13 +1,13 @@
 class Track {
-    constructor(rawTrack, category, labels) {
-        if (rawTrack.id == undefined && rawTrack.url == undefined) {
+    constructor(rawTrack, uploader, category, labels) {
+        if (rawTrack.url == undefined || uploader == undefined) {
             throw new Error('Track does not have all required values');
         }
 
         this.url = rawTrack.url;
         this.name = rawTrack.name;
+        this.uploader = uploader;
         this.category = category;
-        this.id = Track.getId(rawTrack);
 
         if (labels != undefined) {
             this.labels = labels;
@@ -16,23 +16,22 @@ class Track {
         }
     }
 
-    static getId(rawTrack) {
-        if (rawTrack.url != undefined) {
-            return Profile.getId(rawTrack.uploader) + ';' + rawTrack.url;
-        } else {
-            throw new Error('Track URL is needed for ID generation.');
-        }
+    getId() {
+        return this.uploader.getId() + ';' + this.url;
     }
 
     setCategory(category) {
         this.category = category;
+        return this;
     }
 
     addLabel(label) {
         this.labels.add(label);
+        return this;
     }
 
-    removeLabel(label) {
-        this.labels.remove(label.id);
+    removeLabel(labelId) {
+        this.labels.remove(labelId);
+        return this;
     }
 }

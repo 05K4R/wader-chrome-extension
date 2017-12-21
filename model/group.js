@@ -7,4 +7,8 @@ class Group {
             throw new Error('Cannot create group without an ID');
         }
     }
+
+    getId() {
+        return this.id;
+    }
 }
