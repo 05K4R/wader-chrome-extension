@@ -1,16 +1,17 @@
 const messageHandler = {};
 (function() {
     firebase.initializeApp({
-        apiKey: "AIzaSyBn753lEWxDjU9E_rCgF7Nrxjt1tdiA4TI",
-        authDomain: "wader-d8a71.firebaseapp.com",
-        databaseURL: "https://wader-d8a71.firebaseio.com",
-        projectId: "wader-d8a71",
-        storageBucket: "wader-d8a71.appspot.com",
-        messagingSenderId: "68541536183"
+        apiKey: 'AIzaSyBn753lEWxDjU9E_rCgF7Nrxjt1tdiA4TI',
+        authDomain: 'wader-d8a71.firebaseapp.com',
+        databaseURL: 'https://wader-d8a71.firebaseio.com',
+        projectId: 'wader-d8a71',
+        storageBucket: 'wader-d8a71.appspot.com',
+        messagingSenderId: '68541536183'
     });
 
-    const soundcloudModel = new FirestoreSoundcloudModel();
-    const groupModel = new GroupModel();
+    const connection = new FirestoreConnection();
+    const soundcloudModel = new FirestoreSoundcloudModel(connection);
+    const groupModel = new FirestoreGroupModel(connection);
 
     chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
         console.log('messageHandler: new message with subject "'
@@ -36,14 +37,13 @@ const messageHandler = {};
         } else if (request.subject == 'getAllCategories') {
             groupModel.getAllCategories()
                 .then(function(categories) {
-                    console.log(categories);
                     sendResponse({ categories: categories });
                 });
             return true;
         } else {
-           console.log('messageHandler: message subject "'
+            console.log('messageHandler: message subject "'
                 + request.subject + '" not found');
-           return;
-       }
+            return;
+        }
     });
 }).apply(messageHandler);

@@ -1,48 +1,32 @@
 class FirestoreGroupModel extends GroupModel {
-    constructor() {
+    constructor(firestoreConnection) {
         super();
-        this.db = firebase.firestore();
-    }
-
-    addCategories(rawCategories) {
-        // TODO
-        return super.addCategories(rawCategories);
+        this.connection = firestoreConnection;
     }
 
     async addCategory(rawCategory) {
         const category = new Group(rawCategory);
-        const jsonCategory = JSON.parse(JSON.stringify(jsonCategory));
-        return this.db
-            .collection('categories')
-            .doc(category.id)
-            .set(jsonCategory);
+        return this.connection.saveObject('categories', category.getId(), category);
     }
 
-    removeCategory(categoryId) {
-        // TODO'
-        return super.removeCategory(categoryId);
+    async getCategory(categoryId) {
+        return this.connection.getObject('categories', categoryId);
     }
 
-    getCategory(categoryId) {
-        return super.getCategory(categoryId);
+    async getAllCategories() {
+        return this.connection.getCollection('categories');
     }
 
-    addLabels(rawLabels) {
-        // TODO labels
-        return super.addLabels(rawLabels);
+    async addLabel(rawLabel) {
+        const label = new Group(rawLabel);
+        return this.connection.saveObject('labels', label.getId(), label);
     }
 
-    addLabel(rawLabel) {
-        // TODO shit
-        return super.addLabel(rawLabel);
+    async getLabel(labelId) {
+        return this.connection.getObject('labels', labelId);
     }
 
-    removeLabel(labelId) {
-        // TODO
-        return super.removeLabel(labelId);
-    }
-
-    getLabel(labelId) {
-        return super.getLabel(labelId);
+    async getAllLabels() {
+        return this.connection.getCollection('labels');
     }
 }

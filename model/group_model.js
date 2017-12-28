@@ -2,19 +2,14 @@ class GroupModel {
     constructor() {
         this.categories = new Collection();
         this.labels = new Collection();
-
-        this.addCategories([
-            {id: 'test1', name: 'Like'},
-            {id: 'test2', name: 'Okay'},
-            {id: 'dislike', name: 'Dislike'}
-        ]);
     }
 
     async addCategories(rawCategories) {
+        const promises = [];
         for (let rawCategory of rawCategories) {
-            this.addCategory(rawCategory);
+            promises.push(this.addCategory(rawCategory));
         }
-        return this;
+        return Promise.all(promises);
     }
 
     async addCategory(rawCategory) {
@@ -37,10 +32,11 @@ class GroupModel {
     }
 
     async addLabels(rawLabels) {
+        const promises = [];
         for (let rawLabel of rawLabels) {
-            this.addLabel(rawLabel);
+            promises.push(this.addLabel(rawLabel));
         }
-        return this;
+        return Promise.all(promises);
     }
 
     async addLabel(rawLabel) {

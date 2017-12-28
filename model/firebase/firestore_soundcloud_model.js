@@ -1,87 +1,59 @@
 class FirestoreSoundcloudModel extends SoundcloudModel {
-    constructor() {
+    constructor(firestoreConnection) {
         super();
-        this.db = firebase.firestore();
+        this.connection = firestoreConnection;
+    }
+
+    async getOrCreateRepost(rawRepost) {
+        const reposterAndTrack = await Promise.all([
+            this.getOrCreateProfile(rawRepost.reposter),
+            this.getOrCreateTrack(rawRepost.track)
+        ]);
+        const reposter = reposterAndTrack[0];
+        const track = reposterAndTrack[1];
+        const repost = new Repost(rawRepost, reposter, track);
+        if (await this.connection.objectExists('reposts', repost.getId())) {
+            return new Repost(await this.connection.getObject('reposts', repost.getId()), reposter, track);
+        } else {
+            return repost;
+        }
     }
 
     async getOrCreateTrack(rawTrack) {
         const uploader = await this.getOrCreateProfile(rawTrack.uploader);
         const track = new Track(rawTrack, uploader);
-        return this.db
-            .collection('tracks')
-            .doc(track.getId())
-            .get()
-            .then(function(trackDoc) {
-                if (trackDoc.exists) {
-                    return new Track(trackDoc.data(), uploader);
-                } else {
-                    return track;
-                }
-            });
+        if (await this.connection.objectExists('tracks', track.getId())) {
+            return new Track(await this.connection.getObject('tracks', track.getId()), uploader);
+        } else {
+            return track;
+        }
     }
 
     async getOrCreateProfile(rawProfile) {
         const profile = new Profile(rawProfile);
-        return this.db
-            .collection('profiles')
-            .doc(profile.getId())
-            .get()
-            .then(function(profileDoc) {
-                if (profileDoc.exists) {
-                    return new Profile(profileDoc.data());
-                } else {
-                    return profile;
-                }
-            });
-    }
-
-    async getOrCreateRepost(rawRepost, reposter, track) {
-        const reposterAndTrack = await Promise.all([
-            this.getOrCreateProfile(rawRepost.reposter),
-            this.getOrCreateTrack(rawRepost.track)
-        ]);
-        const repost = new Repost(rawRepost, reposterAndTrack[0], reposterAndTrack[1]);
-        return this.db
-            .collection('reposts')
-            .doc(repost.getId())
-            .get()
-            .then(function(repostDoc) {
-                if (repostDoc.exists) {
-                    return new Repost(repostDoc.data(), reposterAndTrack[0], reposterAndTrack[1]);
-                } else {
-                    return repost;
-                }
-            });
+        if (await this.connection.objectExists('profiles', profile.getId())) {
+            return new Profile(await this.connection.getObject('profiles', profile.getId()));
+        } else {
+            return profile;
+        }
     }
 
     async saveRepost(repost) {
-        const jsonRepost = JSON.parse(JSON.stringify(repost));
         return Promise.all([
             this.saveProfile(repost.reposter),
             this.saveTrack(repost.track),
-            this.db
-                .collection('reposts')
-                .doc(repost.getId())
-                .set(jsonRepost)
+            this.connection.saveObject('reposts', repost.getId(), repost)
         ]);
     }
 
     async saveTrack(track) {
-        const jsonTrack = JSON.parse(JSON.stringify(track));
         return Promise.all([
             this.saveProfile(track.uploader),
-            this.db
-                .collection('tracks')
-                .doc(track.getId())
-                .set(jsonTrack)
+            this.connection.saveObject('tracks', track.getId(), track)
         ]);
     }
 
     async saveProfile(profile) {
-        const jsonProfile = JSON.parse(JSON.stringify(profile));
-        return this.db
-            .collection('profiles')
-            .doc(profile.getId())
-            .set(jsonProfile);
+        return this.connection.saveObject('profiles', profile.getId(), profile);
     }
 }
