@@ -5,15 +5,15 @@
 	"description": "Categorize and label tracks posted or reposted by profiles you follow on SoundCloud to determine if they are worth to keep following.",
 	"version": "0.1.0",
 
+	"options_page": "options/options.html",
+
 	"browser_action": {
-		"default_popup": "popup.html"
+		"default_popup": "popup/popup.html"
 	},
 
 	"background": {
-		"page": "background.html"
+		"page": "background/background.html"
 	},
-
-	"options_page": "options/options.html",
 
 	"content_scripts": [
 		{

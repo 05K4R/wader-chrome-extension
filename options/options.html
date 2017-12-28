@@ -1,14 +1,24 @@
 <!DOCTYPE html>
 <html>
-<head><title>Wader options</title></head>
+<head>
+    <title>Wader options</title>
+    <script src="options.js"></script>
+</head>
 <body>
+    <div id="all-categories">
+        <input type="text" id="new-category-name"></input>
+        <button id="add-category">Add category</button>
+        <div id="categories-status">
+            Loading categories...
+        </div>
+    </div>
 
-<div id="all-categories">
-    <input type="text" id="new-category-name"></input>
-    <button id="add-category">Add category</button>
-    Loading categories...
-</div>
-
-<script src="options.js"></script>
+    <div id="all-labels">
+        <input type="text" id="new-label-name"></input>
+        <button id="add-label">Add label</button>
+        <div id="labels-status">
+            Loading labels...
+        </div>
+    </div>
 </body>
 </html>
