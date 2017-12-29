@@ -5,11 +5,9 @@ class FirestoreConnection {
 
     async getObject(collectionName, objectId) {
         return this.getFirebaseObject(collectionName, objectId)
-            .then(
-                function(document) {
-                    return document.data();
-                }
-            );
+            .then(function(document) {
+                 return document.data();
+            });
     }
 
     async getCollection(collectionName) {
@@ -25,11 +23,9 @@ class FirestoreConnection {
 
     async objectExists(collectionName, objectId) {
         return this.getFirebaseObject(collectionName, objectId)
-            .then(
-                function(document) {
-                    return document.exists;
-                }
-            );
+            .then(function(document) {
+                 return document.exists;
+            });
     }
 
     async getFirebaseObject(collectionName, objectId) {
@@ -47,10 +43,13 @@ class FirestoreConnection {
 
     async saveObject(collectionName, objectId, object) {
         const savableObject = await this.createSavableObject(object);
+        const options = {
+            merge: true
+        }
         return this.db
             .collection(collectionName)
             .doc(objectId)
-            .set(savableObject);
+            .set(savableObject, options);
     }
 
     async createSavableObject(object) {

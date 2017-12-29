@@ -5,20 +5,20 @@
 	"description": "Categorize and label tracks posted or reposted by profiles you follow on SoundCloud to determine if they are worth to keep following.",
 	"version": "0.1.0",
 
-	"options_page": "options/options.html",
+	"options_page": "chrome_extension/options.html",
 
 	"browser_action": {
-		"default_popup": "popup/popup.html"
+		"default_popup": "chrome_extension/popup.html"
 	},
 
 	"background": {
-		"page": "background/background.html"
+		"page": "chrome_extension/background.html"
 	},
 
 	"content_scripts": [
 		{
 			"matches": [ "*://soundcloud.com/stream"],
-			"js": ["soundcloud/soundcloud_content.js"],
+			"js": ["soundcloud/listening_scraper.js"],
 			"run_at": "document_end"
 		}
 	],
