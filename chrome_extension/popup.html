@@ -1,19 +1,28 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Wader popup</title>
-  <script src="https://www.gstatic.com/firebasejs/3.6.5/firebase.js"></script>
-  <script src="/chrome_extension/popup.js"></script>
+    <title>Wader track info</title>
 </head>
 <body>
-  <div class="quickstart-user-details-container">
-    <button id="quickstart-button">Sign-in with Google</button>
-    <p>
-      Firebase sign-in status: <span id="quickstart-sign-in-status">Unknown</span>
-      <div>Firebase auth <code>currentUser</code> object value:</div>
-      <pre><code id="quickstart-account-details">null</code></pre>
-    </p>
-  </div>
-  <div id="category-buttons"></div>
+    <h1>Wader current track</h1>
+    <div id="account-status">
+        Loading status...
+    </div>
+    <div id="track">
+        <h2>Track</h2>
+        <div id="track-status">
+            Loading track status...
+        </div>
+        <h3>Name</h3>
+        <div id="track-name"></div>
+        <h3>Uploader</h3>
+        <div id="track-uploader"></div>
+        <h3>Reposter</h3>
+        <div id="track-reposter"></div>
+        <h3>Categories</h3>
+        <div id="track-categories"></div>
+        <h3>Labels</h3>
+        <div id="track-labels"></div>
+    </div>
 </body>
 </html>

@@ -9,12 +9,11 @@ class Wader {
             messagingSenderId: '68541536183'
         });
 
-        const storageConnection = new FirestoreConnection();
+        const authenticator = new FirebaseAuthenticator();
+        const storageConnection = new FirestoreConnection(authenticator);
         const soundcloudModel = new FirestoreSoundcloudModel(storageConnection);
         const groupModel = new FirestoreGroupModel(storageConnection);
-        console.log(groupModel);
-        console.log(soundcloudModel);
-        this.messageDelegator = new MessageDelegator(soundcloudModel, groupModel);
+        this.messageDelegator = new MessageDelegator(soundcloudModel, groupModel, authenticator);
     }
 }
 

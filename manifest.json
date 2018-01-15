@@ -5,7 +5,10 @@
 	"description": "Categorize and label tracks posted or reposted by profiles you follow on SoundCloud to determine if they are worth to keep following.",
 	"version": "0.1.0",
 
-	"options_page": "chrome_extension/options.html",
+	"options_ui": {
+		"page": "chrome_extension/options.html",
+		"chrome_style": true
+	},
 
 	"browser_action": {
 		"default_popup": "chrome_extension/popup.html"
@@ -27,7 +30,7 @@
 		"identity"
 	],
 
-	"content_security_policy":"script-src 'self' 'unsafe-eval' https://www.gstatic.com/ https://*.firebaseio.com https://www.googleapis.com; object-src 'self'",
+	"content_security_policy":"script-src 'self' 'unsafe-eval' https://www.gstatic.com/ https://*.firebaseio.com https://www.googleapis.com https://apis.google.com; object-src 'self'",
 
 	"oauth2": {
 	  "client_id": "68541536183-ht44ou1s0ktae6hekmnv3njulssadk7g.apps.googleusercontent.com",

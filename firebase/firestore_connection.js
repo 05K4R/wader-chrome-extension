@@ -1,6 +1,7 @@
 class FirestoreConnection {
-    constructor() {
+    constructor(authenticator) {
         this.db = firebase.firestore();
+        this.authenticator = authenticator;
     }
 
     async getObject(collectionName, objectId) {
@@ -29,7 +30,10 @@ class FirestoreConnection {
     }
 
     async getFirebaseObject(collectionName, objectId) {
+        const userId = await this.authenticator.getUserId();
         return this.db
+            .collection('users')
+            .doc(userId)
             .collection(collectionName)
             .doc(objectId)
             .get();
@@ -46,7 +50,10 @@ class FirestoreConnection {
         const options = {
             merge: true
         }
+        const userId = await this.authenticator.getUserId();
         return this.db
+            .collection('users')
+            .doc(userId)
             .collection(collectionName)
             .doc(objectId)
             .set(savableObject, options);
