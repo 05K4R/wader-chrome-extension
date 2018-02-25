@@ -30,14 +30,34 @@ class MessageDelegator {
     }
 
     groupListener(request, sender, sendResponse) {
-        if (request.subject == 'addLabels') {
-            this.groupModel.addLabels(request.labels);
-        } else if (request.subject == 'addCategories') {
-            this.groupModel.addCategories(request.categories);
+        if (request.subject == 'addNewCategory') {
+            this.groupModel.addCategory(request.category)
+                .then(function() {
+                    sendResponse();
+                });
+            return true;
         } else if (request.subject == 'getAllCategories') {
             this.groupModel.getAllCategories()
                 .then(function(categories) {
                     sendResponse({ categories: categories });
+                });
+            return true;
+        } else if (request.subject == 'addNewLabel') {
+            this.groupModel.addLabel(request.label)
+                .then(function() {
+                    sendResponse();
+                });
+            return true;
+        } else if (request.subject == 'getAllLabels') {
+            this.groupModel.getAllLabels()
+                .then(function(labels) {
+                    sendResponse({ labels: labels });
+                });
+            return true;
+        } else if (request.subject == 'deleteGroup') {
+            this.groupModel.deleteGroup(request.groupType, request.groupId)
+                .then(function() {
+                    sendResponse();
                 });
             return true;
         }

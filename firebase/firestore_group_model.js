@@ -17,6 +17,10 @@ class FirestoreGroupModel extends GroupModel {
         return this.connection.getCollection('categories');
     }
 
+    async deleteCategory(categoryId) {
+        return this.connection.deleteObject('categories', categoryId);
+    }
+
     async addLabel(rawLabel) {
         const label = new Group(rawLabel);
         return this.connection.saveObject('labels', label.getId(), label);
@@ -28,5 +32,17 @@ class FirestoreGroupModel extends GroupModel {
 
     async getAllLabels() {
         return this.connection.getCollection('labels');
+    }
+
+    async deleteLabel(labelId) {
+        return this.connection.deleteObject('labels', labelId);
+    }
+
+    async deleteGroup(groupType, groupId) {
+        if (groupType == 'category') {
+            return this.deleteCategory(groupId);
+        } else if (groupType == 'label') {
+            return this.deleteLabel(groupId);
+        }
     }
 }

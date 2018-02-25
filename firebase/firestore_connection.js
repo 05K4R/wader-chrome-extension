@@ -40,7 +40,10 @@ class FirestoreConnection {
     }
 
     async getFirebaseCollection(collectionName) {
+        const userId = await this.authenticator.getUserId();
         return this.db
+            .collection('users')
+            .doc(userId)
             .collection(collectionName)
             .get();
     }
@@ -57,6 +60,16 @@ class FirestoreConnection {
             .collection(collectionName)
             .doc(objectId)
             .set(savableObject, options);
+    }
+
+    async deleteObject(collectionName, objectId) {
+        const userId = await this.authenticator.getUserId();
+        return this.db
+            .collection('users')
+            .doc(userId)
+            .collection(collectionName)
+            .doc(objectId)
+            .delete();
     }
 
     async createSavableObject(object) {
