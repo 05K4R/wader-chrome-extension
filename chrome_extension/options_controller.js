@@ -74,7 +74,6 @@ class OptionsController {
                 }
             };
             this.clearNewLabelField();
-            console.log(message);
             chrome.runtime.sendMessage(message, this.updateLabelElements.bind(this));
         }.bind(this));
     }

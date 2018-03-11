@@ -26,6 +26,12 @@ class MessageDelegator {
         } else if (request.subject == 'removeLabelFromCurrentlyPlayingTrack') {
             const label = this.groupModel.getLabel(request.labelId);
             this.soundcloudModel.removeLabelFromCurrentlyPlayingTrack(label);
+        } else if (request.subject == 'getCurrentlyPlayingTrack') {
+            this.soundcloudModel.getCurrentlyPlayingTrack()
+                .then(function(track) {
+                    sendResponse({ track: track });
+                });
+            return true;
         }
     }
 

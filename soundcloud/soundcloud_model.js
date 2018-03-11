@@ -19,6 +19,10 @@ class SoundcloudModel {
         return this.saveRepost(repostAndTrack[0]);
     }
 
+    async getCurrentlyPlayingTrack() {
+        return this.currentlyPlayingTrack;
+    }
+
     async getOrCreateTrack(rawTrack) {
         const uploader = await this.getOrCreateProfile(rawTrack.uploader);
         const track = new Track(rawTrack, uploader);
