@@ -18,14 +18,23 @@ class MessageDelegator {
         } else if (request.subject == 'setCurrentlyPlayingRepostedTrack') {
             this.soundcloudModel.setCurrentlyPlayingRepostedTrack(request.repost);
         } else if (request.subject == 'setCategoryOnCurrentlyPlayingTrack') {
-            const category = this.groupModel.getCategory(request.categoryId);
-            this.soundcloudModel.setCategoryOnCurrentlyPlayingTrack(category);
+            this.groupModel.getCategory(request.categoryId)
+                .then(function(category) {
+                    this.soundcloudModel.setCategoryOnCurrentlyPlayingTrack(category);
+                }.bind(this));
+            return true;
         } else if (request.subject == 'addLabelToCurrentlyPlayingTrack') {
-            const label = this.groupModel.getLabel(request.labelId);
-            this.soundcloudModel.addLabelToCurrentlyPlayingTrack(label);
+            this.groupModel.getLabel(request.labelId)
+                .then(function(label) {
+                    this.soundcloudModel.addLabelOnCurrentlyPlayingTrack(label);
+                }.bind(this));
+            return true;
         } else if (request.subject == 'removeLabelFromCurrentlyPlayingTrack') {
-            const label = this.groupModel.getLabel(request.labelId);
-            this.soundcloudModel.removeLabelFromCurrentlyPlayingTrack(label);
+            this.groupModel.getLabel(request.labelId)
+                .then(function(label) {
+                    this.soundcloudModel.removeLabelFromCurrentlyPlayingTrack(label);
+                }.bind(this));
+            return true;
         } else if (request.subject == 'getCurrentlyPlayingTrack') {
             this.soundcloudModel.getCurrentlyPlayingTrack()
                 .then(function(track) {

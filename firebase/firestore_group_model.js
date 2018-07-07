@@ -27,7 +27,7 @@ class FirestoreGroupModel extends GroupModel {
     }
 
     async getLabel(labelId) {
-        return this.connection.getObject('labels', labelId);
+        return new Group(await this.connection.getObject('labels', labelId));
     }
 
     async getAllLabels() {

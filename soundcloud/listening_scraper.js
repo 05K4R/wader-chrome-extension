@@ -24,7 +24,7 @@ const soundcloudContent = {};
             let streamTrackElement = null;
             for (let i = 0; i < allStreamTrackElements.length; i++) {
                 const trackElement = allStreamTrackElements[i];
-                const linkElement = trackElement.querySelectorAll('.soundContext__targetLink')[0];
+                const linkElement = trackElement.querySelectorAll('.soundTitle__title')[0];
                 const targetLink = linkElement.getAttribute('href');
 
                 if (targetLink === trackLink) {

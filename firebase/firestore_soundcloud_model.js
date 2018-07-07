@@ -49,11 +49,26 @@ class FirestoreSoundcloudModel extends SoundcloudModel {
     async saveTrack(track) {
         return Promise.all([
             this.saveProfile(track.uploader),
-            this.connection.saveObject('tracks', track.getId(), track)
+            this.connection.saveObject('tracks', track.getId(), track.saveable())
         ]);
     }
 
     async saveProfile(profile) {
         return this.connection.saveObject('profiles', profile.getId(), profile);
+    }
+
+    async setCategoryOnCurrentlyPlayingTrack(category) {
+        await this.currentlyPlayingTrack.setCategory(category);
+        return this.saveTrack(this.currentlyPlayingTrack);
+    }
+
+    async addLabelOnCurrentlyPlayingTrack(label) {
+        await this.currentlyPlayingTrack.addLabel(label);
+        return this.saveTrack(this.currentlyPlayingTrack);
+    }
+
+    async removeLabelFromCurrentlyPlayingTrack(labelId) {
+        await this.currentlyPlayingTrack.removeLabel(labelId);
+        return this.saveTrack(this.currentlyPlayingTrack);
     }
 }
