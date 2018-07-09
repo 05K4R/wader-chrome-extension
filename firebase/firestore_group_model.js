@@ -1,6 +1,5 @@
-class FirestoreGroupModel extends GroupModel {
+class FirestoreGroupModel {
     constructor(firestoreConnection) {
-        super();
         this.connection = firestoreConnection;
     }
 

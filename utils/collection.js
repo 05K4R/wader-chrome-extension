@@ -1,6 +1,12 @@
 class Collection {
-    constructor() {
+    constructor(objects) {
         this.allObjects = new Map();
+
+        if (objects) {
+            for (const object of objects) {
+                add(object);
+            }
+        }
     }
 
     add(object) {

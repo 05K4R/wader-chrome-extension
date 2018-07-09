@@ -34,14 +34,4 @@ class Track {
         this.labels.remove(labelId);
         return this;
     }
-
-    saveable() {
-        const rawTrack = {
-            url: this.url,
-            name: this.name
-        }
-        const newTrack = new Track(rawTrack, this.uploader, this.category, this.labels);
-        newTrack.labels = this.labels.getAll();
-        return newTrack;
-    }
 }

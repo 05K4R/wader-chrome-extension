@@ -1,7 +1,27 @@
-class FirestoreSoundcloudModel extends SoundcloudModel {
+class FirestoreSoundcloudModel {
     constructor(firestoreConnection) {
-        super();
         this.connection = firestoreConnection;
+        this.reposts = new Collection();
+        this.tracks = new Collection();
+        this.profiles = new Collection();
+    }
+
+    async setCurrentlyPlayingTrack(rawTrack) {
+        const track = await this.getOrCreateTrack(rawTrack);
+        this.currentlyPlayingTrack = track;
+        return this.saveTrack(track);
+    }
+
+    async setCurrentlyPlayingRepostedTrack(rawRepost) {
+        const repostAndTrack = await Promise.all([
+            this.getOrCreateRepost(rawRepost),
+            this.setCurrentlyPlayingTrack(rawRepost.track)
+        ]);
+        return this.saveRepost(repostAndTrack[0]);
+    }
+
+    async getCurrentlyPlayingTrack() {
+        return this.currentlyPlayingTrack;
     }
 
     async getOrCreateRepost(rawRepost) {
@@ -49,7 +69,7 @@ class FirestoreSoundcloudModel extends SoundcloudModel {
     async saveTrack(track) {
         return Promise.all([
             this.saveProfile(track.uploader),
-            this.connection.saveObject('tracks', track.getId(), track.saveable())
+            this.connection.saveObject('tracks', track.getId(), track)
         ]);
     }
 
