@@ -69,7 +69,7 @@ class FirestoreSoundcloudModel {
     async saveTrack(track) {
         return Promise.all([
             this.saveProfile(track.uploader),
-            this.connection.saveObject('tracks', track.getId(), track)
+            this.connection.saveObject('tracks', track.getId(), track.saveable())
         ]);
     }
 
