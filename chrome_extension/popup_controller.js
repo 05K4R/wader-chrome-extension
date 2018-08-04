@@ -32,11 +32,35 @@ class PopupController {
         chrome.runtime.sendMessage({'subject': 'getAllCategories'}, function(response) {
             this.addGroupElements(response.categories, 'category');
             this.listenToRadioChanges();
+            this.updateRadioButtonStates();
         }.bind(this));
 
         chrome.runtime.sendMessage({'subject': 'getAllLabels'}, function(response) {
             this.addGroupElements(response.labels, 'label');
             this.listenToCheckboxChanges();
+            this.updateCheckboxButtonStates();
+        }.bind(this));
+    }
+
+    updateRadioButtonStates() {
+        chrome.runtime.sendMessage({'subject': 'getCurrentlyPlayingTrack'}, function(response) {
+            const track = response.track;
+            const activeCategory = track.category;
+            if (activeCategory != undefined) {
+                $('#group-' + activeCategory.id).click();
+            }
+        }.bind(this));
+    }
+
+    updateCheckboxButtonStates() {
+        chrome.runtime.sendMessage({'subject': 'getCurrentlyPlayingTrack'}, function(response) {
+            const track = response.track;
+            const activeLabels = track.labels;
+            if (activeLabels != undefined) {
+                for (const label of activeLabels) {
+                    $('#group-' + label.id).click();
+                }
+            }
         }.bind(this));
     }
 

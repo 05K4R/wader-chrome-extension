@@ -2,6 +2,7 @@ class FirestoreConnection {
     constructor(authenticator) {
         this.db = firebase.firestore();
         this.authenticator = authenticator;
+        this.development = false;
     }
 
     async getObject(collectionName, objectId) {
@@ -32,7 +33,7 @@ class FirestoreConnection {
     async getFirebaseObject(collectionName, objectId) {
         const userId = await this.authenticator.getUserId();
         return this.db
-            .collection('users')
+            .collection(this.getUserCollection())
             .doc(userId)
             .collection(collectionName)
             .doc(objectId)
@@ -42,7 +43,7 @@ class FirestoreConnection {
     async getFirebaseCollection(collectionName) {
         const userId = await this.authenticator.getUserId();
         return this.db
-            .collection('users')
+            .collection(this.getUserCollection())
             .doc(userId)
             .collection(collectionName)
             .get();
@@ -55,7 +56,7 @@ class FirestoreConnection {
         }
         const userId = await this.authenticator.getUserId();
         return this.db
-            .collection('users')
+            .collection(this.getUserCollection())
             .doc(userId)
             .collection(collectionName)
             .doc(objectId)
@@ -65,7 +66,7 @@ class FirestoreConnection {
     async deleteObject(collectionName, objectId) {
         const userId = await this.authenticator.getUserId();
         return this.db
-            .collection('users')
+            .collection(this.getUserCollection())
             .doc(userId)
             .collection(collectionName)
             .doc(objectId)
@@ -78,5 +79,13 @@ class FirestoreConnection {
 
     async removeInvalidAttributes(object) {
         return JSON.parse(JSON.stringify(object));
+    }
+
+    getUserCollection() {
+        if (this.development) {
+            return 'devusers';
+        } else {
+            return 'users';
+        }
     }
 }

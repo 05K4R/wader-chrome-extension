@@ -38,7 +38,7 @@ class MessageDelegator {
         } else if (request.subject == 'getCurrentlyPlayingTrack') {
             this.soundcloudModel.getCurrentlyPlayingTrack()
                 .then(function(track) {
-                    sendResponse({ track: track });
+                    sendResponse({ track: track.saveable() });
                 });
             return true;
         }

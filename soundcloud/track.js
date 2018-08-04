@@ -11,7 +11,7 @@ class Track {
 
         this.labels = new Collection();
         if (rawTrack.labels != undefined) {
-            for (rawLabel of rawTrack.labels) {
+            for (const rawLabel of rawTrack.labels) {
                 this.labels.add(new Group(rawLabel));
             }
         }
