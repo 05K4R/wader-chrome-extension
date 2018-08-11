@@ -75,6 +75,19 @@ class MessageDelegator {
                     sendResponse();
                 });
             return true;
+        } else if (request.subject == 'getTrackCategoryRatios') {
+            console.log(request.trackId);
+            this.groupModel.getTrackGroupRatios(request.trackId, 'category')
+                .then(function(categories) {
+                    sendResponse({ ratios: categories});
+                });
+            return true;
+        } else if (request.subject == 'getTrackLabelRatios') {
+            this.groupModel.getTrackGroupRatios(request.trackId, 'label')
+                .then(function(labels) {
+                    sendResponse({ ratios: labels});
+                });
+            return true;
         }
     }
 

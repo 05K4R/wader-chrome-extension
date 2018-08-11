@@ -2,7 +2,7 @@ class FirestoreConnection {
     constructor(authenticator) {
         this.db = firebase.firestore();
         this.authenticator = authenticator;
-        this.development = false;
+        this.development = true;
     }
 
     async getObject(collectionName, objectId) {
@@ -71,6 +71,14 @@ class FirestoreConnection {
             .collection(collectionName)
             .doc(objectId)
             .delete();
+    }
+
+    async runCloudFunction(functionName, args) {
+        args.development = this.development;
+        const cloudFunction = firebase.functions().httpsCallable(functionName);
+        return cloudFunction(args).then(function(result) {
+            return result.data;
+        });
     }
 
     async createSavableObject(object) {

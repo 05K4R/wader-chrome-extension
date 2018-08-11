@@ -44,4 +44,12 @@ class FirestoreGroupModel {
             return this.deleteLabel(groupId);
         }
     }
+
+    async getTrackGroupRatios(trackId, groupType) {
+        const args = {
+            trackId: trackId,
+            groupType: groupType
+        };
+        return this.connection.runCloudFunction('getTrackGroupRatios', args);
+    }
 }

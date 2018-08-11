@@ -39,6 +39,7 @@ class Track {
     saveable() {
         return {
             url: this.url,
+            id: this.getId(),
             name: this.name,
             category: this.category,
             labels: this.labels.getAll(),

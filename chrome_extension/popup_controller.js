@@ -73,6 +73,18 @@ class PopupController {
             if (track.reposter != null) {
                 this.updateTrackReposter(track.reposter);
             }
+
+            this.updateRatios(track.id);
+        }.bind(this));
+    }
+
+    updateRatios(trackId) {
+        chrome.runtime.sendMessage({'subject': 'getTrackCategoryRatios', 'trackId': trackId}, function(response) {
+            this.addGroupRatios(response.ratios, 'category');
+        }.bind(this));
+
+        chrome.runtime.sendMessage({'subject': 'getTrackLabelRatios', 'trackId': trackId}, function(response) {
+            this.addGroupRatios(response.ratios, 'label');
         }.bind(this));
     }
 
@@ -93,6 +105,18 @@ class PopupController {
             document.getElementById('track-reposter').innerHTML = reposter.name;
         } else {
             document.getElementById('track-reposter').innerHTML = reposter.url;
+        }
+    }
+
+    addGroupRatios(ratios, groupType) {
+        for (const group of ratios.uploader) {
+            const element = document.getElementById('uploader-' + groupType + '-ratios');
+            element.innerHTML += group.name + ': ' + group.ratio + '% ';
+        }
+
+        for (const group of ratios.reposter) {
+            const element = document.getElementById('reposter-' + groupType + '-ratios');
+            element.innerHTML += group.name + ': ' + group.ratio + '% ';
         }
     }
 
