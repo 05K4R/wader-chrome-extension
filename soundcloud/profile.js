@@ -11,4 +11,12 @@ class Profile {
     getId() {
         return this.url;
     }
+
+    asJSON() {
+        return {
+            id: this.getId(),
+            url: this.url,
+            name: this.name
+        }
+    }
 }

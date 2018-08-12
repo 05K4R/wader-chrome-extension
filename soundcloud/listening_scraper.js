@@ -56,6 +56,9 @@ const soundcloudContent = {};
 
                 const repostElements = streamTrackElement.querySelectorAll('.soundContext__repost');
                 const reposted = repostElements.length !== 0;
+
+                console.log('reposted: ' + reposted);
+
                 if (reposted) {
                     reposterUrl = usernameLink.replace('/', '');
                     reposterName = username;

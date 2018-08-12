@@ -65,26 +65,30 @@ class PopupController {
     }
 
     updateTrackInformation() {
-        chrome.runtime.sendMessage({'subject': 'getCurrentlyPlayingTrack'}, function(response) {
-            const track = response.track;
-            this.updateTrackName(track.name);
-            this.updateTrackUploader(track.uploader);
-
-            if (track.reposter != null) {
-                this.updateTrackReposter(track.reposter);
+        chrome.runtime.sendMessage({'subject': 'currentlyPlayingTrackIsReposted'}, function(response) {
+            if (response.result) {
+                chrome.runtime.sendMessage({'subject': 'getCurrentRepost'}, function(response) {
+                    const repost = response.repost;
+                    const track = repost.track;
+                    this.updateTrackName(track.name);
+                    this.updateTrackUploader(track.uploader);
+                    this.updateTrackReposter(repost.reposter);
+                }.bind(this));
+            } else {
+                chrome.runtime.sendMessage({'subject': 'getCurrentlyPlayingTrack'}, function(response) {
+                    const track = response.track;
+                    this.updateTrackName(track.name);
+                    this.updateTrackUploader(track.uploader);
+                }.bind(this));
             }
-
-            this.updateRatios(track.id);
         }.bind(this));
     }
 
-    updateRatios(trackId) {
-        chrome.runtime.sendMessage({'subject': 'getTrackCategoryRatios', 'trackId': trackId}, function(response) {
-            this.addGroupRatios(response.ratios, 'category');
-        }.bind(this));
-
-        chrome.runtime.sendMessage({'subject': 'getTrackLabelRatios', 'trackId': trackId}, function(response) {
-            this.addGroupRatios(response.ratios, 'label');
+    updateReposterRatios(reposterId) {
+        console.log('yollo');
+        chrome.runtime.sendMessage({'subject': 'getGroupRatios', 'profileId': reposterId}, function(response) {
+            console.log('updatereposterrtaiots');
+            this.addGroupRatios(response.ratios);
         }.bind(this));
     }
 
@@ -106,17 +110,19 @@ class PopupController {
         } else {
             document.getElementById('track-reposter').innerHTML = reposter.url;
         }
+
+        this.updateReposterRatios(reposter.id);
     }
 
-    addGroupRatios(ratios, groupType) {
-        for (const group of ratios.uploader) {
-            const element = document.getElementById('uploader-' + groupType + '-ratios');
-            element.innerHTML += group.name + ': ' + group.ratio + '% ';
+    addGroupRatios(ratios) {
+        for (const category of ratios.categories) {
+            const element = document.getElementById('category-ratios');
+            element.innerHTML += group.name + ': ' + group.ratio;
         }
 
-        for (const group of ratios.reposter) {
-            const element = document.getElementById('reposter-' + groupType + '-ratios');
-            element.innerHTML += group.name + ': ' + group.ratio + '% ';
+        for (const label of ratios.labels) {
+            const element = document.getElementById('label-ratios');
+            element.innerHTML += group.name + ': ' + group.ratio;
         }
     }
 

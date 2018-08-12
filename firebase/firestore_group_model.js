@@ -45,11 +45,10 @@ class FirestoreGroupModel {
         }
     }
 
-    async getTrackGroupRatios(trackId, groupType) {
+    async getGroupRatios(profileId) {
         const args = {
-            trackId: trackId,
-            groupType: groupType
+            profileId: profileId,
         };
-        return this.connection.runCloudFunction('getTrackGroupRatios', args);
+        return this.connection.runCloudFunction('getGroupRatios', args);
     }
 }

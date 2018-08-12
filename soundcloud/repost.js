@@ -12,4 +12,13 @@ class Repost {
     getId() {
         return this.reposter.getId() + ';' + this.time + ';' + this.track.getId();
     }
+
+    asJSON() {
+        return {
+            id: this.getId(),
+            track: this.track.asJSON(),
+            time: this.time,
+            reposter: this.reposter.asJSON()
+        }
+    }
 }

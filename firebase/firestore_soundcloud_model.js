@@ -6,22 +6,38 @@ class FirestoreSoundcloudModel {
         this.profiles = new Collection();
     }
 
-    async setCurrentlyPlayingTrack(rawTrack) {
+    async setCurrentlyPlayingTrack(rawTrack, reposted) {
         const track = await this.getOrCreateTrack(rawTrack);
         this.currentlyPlayingTrack = track;
+
+        if (!reposted) {
+            this.currentRepost = undefined;
+        }
+
         return this.saveTrack(track);
     }
 
     async setCurrentlyPlayingRepostedTrack(rawRepost) {
+        console.log('reposted');
+        console.log(rawRepost);
         const repostAndTrack = await Promise.all([
             this.getOrCreateRepost(rawRepost),
-            this.setCurrentlyPlayingTrack(rawRepost.track)
+            this.setCurrentlyPlayingTrack(rawRepost.track, true)
         ]);
+        this.currentRepost = repostAndTrack[0];
         return this.saveRepost(repostAndTrack[0]);
     }
 
     async getCurrentlyPlayingTrack() {
         return this.currentlyPlayingTrack;
+    }
+
+    async getCurrentRepost() {
+        return this.currentRepost;
+    }
+
+    async currentlyPlayingTrackIsReposted() {
+        return this.currentRepost != null;
     }
 
     async getOrCreateRepost(rawRepost) {
@@ -62,19 +78,19 @@ class FirestoreSoundcloudModel {
         return Promise.all([
             this.saveProfile(repost.reposter),
             this.saveTrack(repost.track),
-            this.connection.saveObject('reposts', repost.getId(), repost)
+            this.connection.saveObject('reposts', repost.getId(), repost.asJSON())
         ]);
     }
 
     async saveTrack(track) {
         return Promise.all([
             this.saveProfile(track.uploader),
-            this.connection.saveObject('tracks', track.getId(), track.saveable())
+            this.connection.saveObject('tracks', track.getId(), track.asJSON())
         ]);
     }
 
     async saveProfile(profile) {
-        return this.connection.saveObject('profiles', profile.getId(), profile);
+        return this.connection.saveObject('profiles', profile.getId(), profile.asJSON());
     }
 
     async setCategoryOnCurrentlyPlayingTrack(category) {

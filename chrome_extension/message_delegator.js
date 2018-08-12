@@ -16,6 +16,7 @@ class MessageDelegator {
         if (request.subject == 'setCurrentlyPlayingTrack') {
             this.soundcloudModel.setCurrentlyPlayingTrack(request.track);
         } else if (request.subject == 'setCurrentlyPlayingRepostedTrack') {
+            console.log('yollollo');
             this.soundcloudModel.setCurrentlyPlayingRepostedTrack(request.repost);
         } else if (request.subject == 'setCategoryOnCurrentlyPlayingTrack') {
             this.groupModel.getCategory(request.categoryId)
@@ -38,7 +39,20 @@ class MessageDelegator {
         } else if (request.subject == 'getCurrentlyPlayingTrack') {
             this.soundcloudModel.getCurrentlyPlayingTrack()
                 .then(function(track) {
-                    sendResponse({ track: track.saveable() });
+                    console.log(track);
+                    sendResponse({ track: track.asJSON() });
+                });
+            return true;
+        } else if (request.subject == 'getCurrentRepost') {
+            this.soundcloudModel.getCurrentRepost()
+                .then(function(repost) {
+                    sendResponse({ repost: repost.asJSON() });
+                });
+            return true;
+        } else if (request.subject == 'currentlyPlayingTrackIsReposted') {
+            this.soundcloudModel.currentlyPlayingTrackIsReposted()
+                .then(function(result) {
+                    sendResponse({ result: result });
                 });
             return true;
         }
@@ -75,17 +89,12 @@ class MessageDelegator {
                     sendResponse();
                 });
             return true;
-        } else if (request.subject == 'getTrackCategoryRatios') {
-            console.log(request.trackId);
-            this.groupModel.getTrackGroupRatios(request.trackId, 'category')
-                .then(function(categories) {
-                    sendResponse({ ratios: categories});
-                });
-            return true;
-        } else if (request.subject == 'getTrackLabelRatios') {
-            this.groupModel.getTrackGroupRatios(request.trackId, 'label')
-                .then(function(labels) {
-                    sendResponse({ ratios: labels});
+        } else if (request.subject == 'getGroupRatios') {
+            this.groupModel.getGroupRatios(request.profileId)
+                .then(function(ratios) {
+                    console.log('message_delegator');
+                    console.log(ratios);
+                    sendResponse({ ratios: ratios});
                 });
             return true;
         }

@@ -36,14 +36,15 @@ class Track {
         return this;
     }
 
-    saveable() {
+    asJSON() {
+        console.log(this.category);
         return {
-            url: this.url,
             id: this.getId(),
+            url: this.url,
             name: this.name,
             category: this.category,
             labels: this.labels.getAll(),
-            uploader: this.uploader
+            uploader: this.uploader.asJSON()
         }
     }
 }
