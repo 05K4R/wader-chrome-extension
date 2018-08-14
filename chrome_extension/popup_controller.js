@@ -115,15 +115,19 @@ class PopupController {
     }
 
     addGroupRatios(ratios) {
-        for (const category of ratios.categories) {
-            const element = document.getElementById('category-ratios');
-            element.innerHTML += group.name + ': ' + group.ratio;
-        }
+        Object.entries(ratios.categories).forEach(
+            ([categoryName, amount]) => {
+                const element = document.getElementById('category-ratios');
+                element.innerHTML += categoryName + ': ' + amount + ' ';
+            }
+        );
 
-        for (const label of ratios.labels) {
-            const element = document.getElementById('label-ratios');
-            element.innerHTML += group.name + ': ' + group.ratio;
-        }
+        Object.entries(ratios.labels).forEach(
+            ([labelName, amount]) => {
+                const element = document.getElementById('label-ratios');
+                element.innerHTML += labelName + ': ' + amount + ' ';
+            }
+        );
     }
 
     addGroupElements(groups, groupType) {
