@@ -18,8 +18,6 @@ class FirestoreSoundcloudModel {
     }
 
     async setCurrentlyPlayingRepostedTrack(rawRepost) {
-        console.log('reposted');
-        console.log(rawRepost);
         const repostAndTrack = await Promise.all([
             this.getOrCreateRepost(rawRepost),
             this.setCurrentlyPlayingTrack(rawRepost.track, true)

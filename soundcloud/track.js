@@ -37,7 +37,6 @@ class Track {
     }
 
     asJSON() {
-        console.log(this.category);
         return {
             id: this.getId(),
             url: this.url,

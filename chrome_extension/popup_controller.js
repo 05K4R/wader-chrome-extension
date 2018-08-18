@@ -85,9 +85,7 @@ class PopupController {
     }
 
     updateReposterRatios(reposterId) {
-        console.log('yollo');
         chrome.runtime.sendMessage({'subject': 'getGroupRatios', 'profileId': reposterId}, function(response) {
-            console.log('updatereposterrtaiots');
             this.addGroupRatios(response.ratios);
         }.bind(this));
     }

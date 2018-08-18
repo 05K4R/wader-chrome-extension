@@ -16,7 +16,6 @@ class MessageDelegator {
         if (request.subject == 'setCurrentlyPlayingTrack') {
             this.soundcloudModel.setCurrentlyPlayingTrack(request.track);
         } else if (request.subject == 'setCurrentlyPlayingRepostedTrack') {
-            console.log('yollollo');
             this.soundcloudModel.setCurrentlyPlayingRepostedTrack(request.repost);
         } else if (request.subject == 'setCategoryOnCurrentlyPlayingTrack') {
             this.groupModel.getCategory(request.categoryId)
@@ -39,7 +38,6 @@ class MessageDelegator {
         } else if (request.subject == 'getCurrentlyPlayingTrack') {
             this.soundcloudModel.getCurrentlyPlayingTrack()
                 .then(function(track) {
-                    console.log(track);
                     sendResponse({ track: track.asJSON() });
                 });
             return true;
@@ -92,8 +90,6 @@ class MessageDelegator {
         } else if (request.subject == 'getGroupRatios') {
             this.groupModel.getGroupRatios(request.profileId)
                 .then(function(ratios) {
-                    console.log('message_delegator');
-                    console.log(ratios);
                     sendResponse({ ratios: ratios});
                 });
             return true;
