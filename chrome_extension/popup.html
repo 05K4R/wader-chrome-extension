@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Wader track info</title>
+    <script src="/utils/collection.js"></script>
+    <script src="/utils/jquery-3.2.1.min.js"></script>
+    <script src="/utils/bootstrap.min.js"></script>
+    <script src="/chrome_extension/popup_controller.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <style>
+        body {
+            min-width:400px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Wader current track</h1>
+    <div id="track">
+        <h2>Track</h2>
+        <h3>Name</h3>
+        <div id="track-name"></div>
+        <h3>Uploader</h3>
+        <div id="track-uploader"></div>
+        <h3>Reposter</h3>
+        <div id="track-reposter"></div>
+        <h3>Categories</h3>
+        <div id="available-category-groups" class="btn-group-toggle" data-toggle="buttons"></div>
+        <div id="category-ratios"></div>
+        <h3>Labels</h3>
+        <div id="available-label-groups" class="btn-group-toggle" data-toggle="buttons"></div>
+        <div id="label-ratios"></div>
+    </div>
+    </div>
+</body>
+</html>
