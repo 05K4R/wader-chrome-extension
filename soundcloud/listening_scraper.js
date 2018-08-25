@@ -1,7 +1,7 @@
 const soundcloudContent = {};
 (function() {
     const soundBadgeObserver = new MutationObserver(function (mutations) {
-        console.log('soundcloudContent: track change observed');
+        console.log('Wader: track change observed');
 
         const currentTrackTarget = document.querySelector('.playbackSoundBadge__titleLink');
         if (currentTrackTarget) {
@@ -56,8 +56,6 @@ const soundcloudContent = {};
 
                 const repostElements = streamTrackElement.querySelectorAll('.soundContext__repost');
                 const reposted = repostElements.length !== 0;
-
-                console.log('reposted: ' + reposted);
 
                 if (reposted) {
                     reposterUrl = usernameLink.replace('/', '');

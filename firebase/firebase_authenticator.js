@@ -31,10 +31,10 @@ class FirebaseAuthenticator {
 
     async updateUserStatus(user) {
         if (user) {
-            console.log('User signed in');
+            console.log('Wader: user signed in');
             this.user = user;
         } else {
-            console.log('User signed out');
+            console.log('Wader: user signed out');
             this.user = null;
         }
     }
