@@ -2,6 +2,25 @@ class PopupController {
     constructor() {
         this.updateAvailableGroups();
         this.updateTrackInformation();
+        this.whenDocumentIsReady(this.showSignInMessage.bind(this));
+    }
+
+    whenDocumentIsReady(functionToCall) {
+        $(document).ready(functionToCall);
+    }
+
+    showSignInMessage() {
+        chrome.runtime.sendMessage({'subject': 'userIsSignedIn'}, function(response) {
+            if (!response.userIsSignedIn) {
+                const message = 'You need to sign in to use Wader, please do so from the <a id="options-link" href="chrome://extensions/?options=gjjdinpmbhdnnhoegfdaamjcmjaekcok">options page</a>.';
+                document.getElementById('message').innerHTML = message;
+                const optionsLink = document.getElementById('options-link');
+                optionsLink.onclick = function() {
+                    chrome.runtime.openOptionsPage();
+                    return false;
+                };
+            }
+        });
     }
 
     listenToRadioChanges() {
