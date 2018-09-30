@@ -1,7 +1,7 @@
 # Changelog
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [Unreleased]
+## 0.2.0 - 2018-09-30
 ### Added
 - This changelog!
 - Popup indication when a user need to sign in.
