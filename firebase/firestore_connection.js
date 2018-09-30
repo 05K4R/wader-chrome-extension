@@ -2,7 +2,7 @@ class FirestoreConnection {
     constructor(authenticator) {
         this.db = firebase.firestore();
         this.authenticator = authenticator;
-        this.development = true;
+        this.development = false;
     }
 
     async getObject(collectionName, objectId) {
