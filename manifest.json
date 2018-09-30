@@ -5,6 +5,12 @@
 	"description": "Categorize and label tracks posted or reposted by profiles you follow on SoundCloud.",
 	"version": "0.1.0",
 
+	"icons": {
+		"16": "images/wader-16.png",
+		"48": "images/wader-48.png",
+		"128": "images/wader-128.png"
+	},
+
 	"options_ui": {
 		"page": "chrome_extension/options.html",
 		"chrome_style": true
