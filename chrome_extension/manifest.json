@@ -12,16 +12,16 @@
 	},
 
 	"options_ui": {
-		"page": "chrome_extension/options.html",
+		"page": "options.html",
 		"chrome_style": true
 	},
 
 	"browser_action": {
-		"default_popup": "chrome_extension/popup.html"
+		"default_popup": "popup.html"
 	},
 
 	"background": {
-		"page": "chrome_extension/background.html"
+		"page": "background.html"
 	},
 
 	"content_scripts": [
