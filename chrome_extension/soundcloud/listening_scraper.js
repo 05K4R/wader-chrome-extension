@@ -1,100 +1,157 @@
-const soundcloudContent = {};
-(function() {
-    const soundBadgeObserver = new MutationObserver(function (mutations) {
-        console.log('Wader: track change observed');
+const CURRENTLY_PLAYING_TRACK_OBSERVER_TARGET = '.playbackSoundBadge';
+const CURRENTLY_PLAYING_TRACK_SELECTOR = '.playbackSoundBadge__titleLink';
+const STREAM_ACTIONS_SELECTOR = '.soundList__item';
+const REPOST_SELECTOR = '.soundContext__repost';
+const REPOST_TIME_SELECTOR = '.relativeTime';
+const REPOSTER_LINK_SELECTOR = '.soundContext__usernameLink';
+const TRACK_TITLE_SELECTOR = '.soundTitle__title';
 
-        const currentTrackTarget = document.querySelector('.playbackSoundBadge__titleLink');
-        if (currentTrackTarget) {
+class ListeningScraper {
+    constructor() {
+        this.addCurrentlyPlayingTrackChangeObserver();
+    }
 
-            // trackLink formatted as /uploaderUrl/trackUrl?in=playlist
-            const trackLink = currentTrackTarget.getAttribute('href');
-            const splitTrackLink = trackLink.split('?');
+    addCurrentlyPlayingTrackChangeObserver() {
+        new MutationObserver(this.updateCurrentlyPlayingTrack.bind(this))
+                .observe(document.querySelector(CURRENTLY_PLAYING_TRACK_OBSERVER_TARGET), {
+            subtree: true,
+            childList: true
+        });
+    }
 
-            let playlist = null;
-            if (splitTrackLink.length > 1) {
-                playlist = splitTrackLink[1];
-            }
-
-            const uploaderUrl = splitTrackLink[0].split('/')[1];
-            const trackUrl = splitTrackLink[0].split('/')[2];
-            const trackName = currentTrackTarget.getAttribute('title');
-
-            const allStreamTrackElements = document.querySelectorAll('.soundList__item');
-
-            let streamTrackElement = null;
-            for (let i = 0; i < allStreamTrackElements.length; i++) {
-                const trackElement = allStreamTrackElements[i];
-                const linkElement = trackElement.querySelectorAll('.soundTitle__title')[0];
-                const targetLink = linkElement.getAttribute('href');
-
-                if (targetLink === trackLink) {
-                    streamTrackElement = trackElement;
-                    break;
-                }
-        	}
-
-            const track = {
-                url: trackUrl,
-                name: trackName,
-                uploader: {
-                    url: uploaderUrl,
-                }
-            }
-
-            let uploaderName = null;
-            let reposterUrl = null;
-            let repost = null;
-            if (streamTrackElement) {
-                const uploaderNameElement = streamTrackElement.querySelectorAll('.soundTitle__usernameText')[0];
-                uploaderName = uploaderNameElement.innerText;
-
-                track.uploader.uploaderName = uploaderName;
-
-                const usernameLinkElement = streamTrackElement.querySelectorAll('.soundContext__usernameLink')[0];
-                const usernameLink = usernameLinkElement.getAttribute('href');
-                const username = usernameLinkElement.innerText;
-
-                const repostElements = streamTrackElement.querySelectorAll('.soundContext__repost');
-                const reposted = repostElements.length !== 0;
-
-                if (reposted) {
-                    reposterUrl = usernameLink.replace('/', '');
-                    reposterName = username;
-
-                    const timeElement = streamTrackElement.querySelectorAll('.relativeTime')[0];
-                    repostTime = Date.parse(timeElement.getAttribute('datetime'));
-
-                    repost = {
-                        time: repostTime,
-                        track: track,
-                        reposter: {
-                            url: reposterUrl,
-                            name: reposterName,
-                        }
-                    }
-                }
-            }
-
-            let message = null;
-            if (repost) {
-                message = {
-                    subject: 'setCurrentlyPlayingRepostedTrack',
-                    repost: repost,
-                }
-            } else {
-                message = {
-                    subject: 'setCurrentlyPlayingTrack',
-                    track: track,
-                }
-            }
-
-            chrome.runtime.sendMessage(message);
+    updateCurrentlyPlayingTrack() {
+        console.log('Wader: new currently playing track observed');
+        const currentlyPlayingTrack = this.scrapeCurrentlyPlayingTrack();
+        if (currentlyPlayingTrack) {
+            const streamAction = this.findStreamActionFor(currentlyPlayingTrack);
+            this.publishStreamAction(streamAction);
+        } else {
+            console.log('Wader: unable to scrape currently playing track');
         }
-    });
+    }
 
-    const observerTarget = document.querySelector('.playbackSoundBadge');
-    soundBadgeObserver.observe(observerTarget, {
-        subtree: true,
-        childList: true
-    });
-}).apply(soundcloudContent);
+    publishStreamAction(streamAction) {
+        if (streamAction.type == 'REPOST') {
+            this.sendPlayingRepost(streamAction);
+        } else if (streamAction.type == 'UPLOAD') {
+            this.sendPlayingTrack(streamAction);
+        } else {
+            console.log('Wader: unknown stream action type ' + streamAction.type);
+        }
+    }
+
+    findStreamActionFor(track) {
+        const allStreamActions = this.scrapeStreamActions();
+        if (this.streamActionsContains(track, allStreamActions)) {
+            return this.getStreamActionFor(track, allStreamActions);
+        } else {
+            // Even if we can't find the track in the stream, we know for sure that it has been uploaded so we fake an
+            // 'Upload' stream action
+            return this.createUploadStreamActionFor(track);
+        }
+    }
+
+    streamActionsContains(track, streamActions) {
+        if (this.getStreamActionFor(track, streamActions)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    getStreamActionFor(track, streamActions) {
+        for (let i = 0; i < streamActions.length; i++) {
+            if (streamActions[i].track.url == track.url && streamActions[i].track.uploader.url == track.uploader.url) {
+                return streamActions[i];
+            }
+        }
+    }
+
+    scrapeStreamActions() {
+        const allStreamActionElements = document.querySelectorAll(STREAM_ACTIONS_SELECTOR);
+        const allStreamActions = [];
+
+        for (let i = 0; i < allStreamActionElements.length; i++) {
+            const streamActionElement = allStreamActionElements[i];
+            const repostElements = streamActionElement.querySelectorAll(REPOST_SELECTOR);
+            const isARepost = repostElements.length === 1;
+
+            if (isARepost) {
+                allStreamActions.push(this.scrapeRepostStreamActionFrom(streamActionElement));
+            }
+        }
+        return allStreamActions;
+    }
+
+    scrapeRepostStreamActionFrom(streamActionElement) {
+        const trackTitleElement = streamActionElement.querySelectorAll(TRACK_TITLE_SELECTOR)[0];
+        const track = this.parseTrack(trackTitleElement);
+
+        const reposterLinkElement = streamActionElement.querySelectorAll(REPOSTER_LINK_SELECTOR)[0];
+        const reposterUrl = reposterLinkElement.getAttribute('href').replace('/', '');
+        const reposterName = reposterLinkElement.innerText;
+
+        const repostTimeElement = streamActionElement.querySelectorAll(REPOST_TIME_SELECTOR)[0];
+        const repostTime = Date.parse(repostTimeElement.getAttribute('datetime'));
+
+        return {
+            type: 'REPOST',
+            time: repostTime,
+            track: track,
+            reposter: {
+                url: reposterUrl,
+                name: reposterName
+            }
+        };
+    }
+
+    createUploadStreamActionFor(track) {
+        return {
+            type: 'UPLOAD',
+            track: track
+        }
+    }
+
+    scrapeCurrentlyPlayingTrack() {
+        const currentlyPlayingTrackElement = document.querySelector(CURRENTLY_PLAYING_TRACK_SELECTOR);
+        if (currentlyPlayingTrackElement) {
+            return this.parseTrack(currentlyPlayingTrackElement);
+        }
+    }
+
+    sendPlayingTrack(upload) {
+        chrome.runtime.sendMessage({
+            subject: 'setCurrentlyPlayingTrack',
+            track: upload.track,
+        });
+    }
+
+    sendPlayingRepost(repost) {
+        chrome.runtime.sendMessage({
+            subject: 'setCurrentlyPlayingRepostedTrack',
+            repost: repost,
+        });
+    }
+
+    parseTrack(currentTrackTarget) {
+        // href attribute formatted as /uploaderUrl/trackUrl?in=playlist
+        const splitTrackLink = currentTrackTarget.getAttribute('href').split('?');
+
+        let name = null;
+        if (currentTrackTarget.getAttribute('title')) {
+            name = currentTrackTarget.getAttribute('title');
+        } else if (currentTrackTarget.innerText) {
+            name = currentTrackTarget.innerText;
+        }
+
+        return {
+            url: splitTrackLink[0].split('/')[2],
+            name: name,
+            uploader: {
+                url: splitTrackLink[0].split('/')[1],
+            }
+        }
+    }
+}
+
+const scraper = new ListeningScraper();
