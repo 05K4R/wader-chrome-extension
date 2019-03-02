@@ -1,6 +1,9 @@
 # Changelog
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## 0.3.0 - 2019-03-02
+This release only contains internal updates.
+
 ## 0.2.0 - 2018-09-30
 ### Added
 - This changelog!
