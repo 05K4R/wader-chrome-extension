@@ -1,8 +1,7 @@
 class FirestoreConnection {
-    constructor(authenticator, development) {
+    constructor(authenticator) {
         this.db = firebase.firestore();
         this.authenticator = authenticator;
-        this.development = development;
     }
 
     async getObject(collectionName, objectId) {
@@ -74,7 +73,6 @@ class FirestoreConnection {
     }
 
     async runCloudFunction(functionName, args) {
-        args.development = this.development;
         const cloudFunction = firebase.functions().httpsCallable(functionName);
         return cloudFunction(args).then(function(result) {
             return result.data;
@@ -90,10 +88,6 @@ class FirestoreConnection {
     }
 
     getUserCollection() {
-        if (this.development) {
-            return 'devusers';
-        } else {
-            return 'users';
-        }
+        return 'users';
     }
 }
