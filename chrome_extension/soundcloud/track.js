@@ -8,13 +8,6 @@ class Track {
         this.name = rawTrack.name;
         this.category = rawTrack.category;
         this.uploader = uploader;
-
-        this.labels = new Collection();
-        if (rawTrack.labels != undefined) {
-            for (const rawLabel of rawTrack.labels) {
-                this.labels.add(new Group(rawLabel));
-            }
-        }
     }
 
     getId() {
@@ -22,17 +15,7 @@ class Track {
     }
 
     setCategory(category) {
-        this.category = category;
-        return this;
-    }
-
-    addLabel(label) {
-        this.labels.add(label);
-        return this;
-    }
-
-    removeLabel(labelId) {
-        this.labels.remove(labelId);
+        this.category = category.id;
         return this;
     }
 
@@ -42,7 +25,6 @@ class Track {
             url: this.url,
             name: this.name,
             category: this.category,
-            labels: this.labels.getAll(),
             uploader: this.uploader.asJSON()
         }
     }

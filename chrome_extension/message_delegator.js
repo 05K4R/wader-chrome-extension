@@ -23,18 +23,6 @@ class MessageDelegator {
                     this.soundcloudModel.setCategoryOnCurrentlyPlayingTrack(category);
                 }.bind(this));
             return true;
-        } else if (request.subject == 'addLabelToCurrentlyPlayingTrack') {
-            this.groupModel.getLabel(request.labelId)
-                .then(function(label) {
-                    this.soundcloudModel.addLabelOnCurrentlyPlayingTrack(label);
-                }.bind(this));
-            return true;
-        } else if (request.subject == 'removeLabelFromCurrentlyPlayingTrack') {
-            this.groupModel.getLabel(request.labelId)
-                .then(function(label) {
-                    this.soundcloudModel.removeLabelFromCurrentlyPlayingTrack(label);
-                }.bind(this));
-            return true;
         } else if (request.subject == 'getCurrentlyPlayingTrack') {
             this.soundcloudModel.getCurrentlyPlayingTrack()
                 .then(function(track) {
@@ -57,40 +45,16 @@ class MessageDelegator {
     }
 
     groupListener(request, sender, sendResponse) {
-        if (request.subject == 'addNewCategory') {
-            this.groupModel.addCategory(request.category)
-                .then(function() {
-                    sendResponse();
-                });
-            return true;
-        } else if (request.subject == 'getAllCategories') {
+        if (request.subject == 'getAllCategories') {
             this.groupModel.getAllCategories()
                 .then(function(categories) {
                     sendResponse({ categories: categories });
                 });
             return true;
-        } else if (request.subject == 'addNewLabel') {
-            this.groupModel.addLabel(request.label)
-                .then(function() {
-                    sendResponse();
-                });
-            return true;
-        } else if (request.subject == 'getAllLabels') {
-            this.groupModel.getAllLabels()
-                .then(function(labels) {
-                    sendResponse({ labels: labels });
-                });
-            return true;
-        } else if (request.subject == 'deleteGroup') {
-            this.groupModel.deleteGroup(request.groupType, request.groupId)
-                .then(function() {
-                    sendResponse();
-                });
-            return true;
-        } else if (request.subject == 'getGroupRatios') {
-            this.groupModel.getGroupRatios(request.profileId)
-                .then(function(ratios) {
-                    sendResponse({ ratios: ratios});
+        } else if (request.subject == 'getProfileScore') {
+            this.groupModel.getProfileScore(request.profileUrl)
+                .then(function(score) {
+                    sendResponse({ score: score});
                 });
             return true;
         }

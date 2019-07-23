@@ -73,36 +73,40 @@ class FirestoreSoundcloudModel {
     }
 
     async saveRepost(repost) {
-        return Promise.all([
-            this.saveProfile(repost.reposter),
-            this.saveTrack(repost.track),
-            this.connection.saveObject('reposts', repost.getId(), repost.asJSON())
-        ]);
+        const args = {
+            repostInfo: repost.asJSON()
+        }
+
+        args.repostInfo.reposterInfo = repost.reposter.asJSON();
+        args.repostInfo.trackInfo = repost.track.asJSON();
+        args.repostInfo.trackInfo.uploaderInfo = repost.track.uploader.asJSON();
+        return this.connection.runCloudFunction('updateRepost', args);
     }
 
     async saveTrack(track) {
-        return Promise.all([
-            this.saveProfile(track.uploader),
-            this.connection.saveObject('tracks', track.getId(), track.asJSON())
-        ]);
+        const args = {
+            trackInfo: track.asJSON()
+        }
+
+        args.trackInfo.uploaderInfo = track.uploader.asJSON();
+        return this.connection.runCloudFunction('updateTrack', args);
     }
 
     async saveProfile(profile) {
-        return this.connection.saveObject('profiles', profile.getId(), profile.asJSON());
+        const args = {
+            profileInfo: profile.asJSON()
+        };
+
+        return this.connection.runCloudFunction('updateProfile', args);
     }
 
     async setCategoryOnCurrentlyPlayingTrack(category) {
-        await this.currentlyPlayingTrack.setCategory(category);
-        return this.saveTrack(this.currentlyPlayingTrack);
-    }
+        const args = {
+            category: category.id,
+            trackInfo: this.currentlyPlayingTrack.asJSON()
+        }
 
-    async addLabelOnCurrentlyPlayingTrack(label) {
-        await this.currentlyPlayingTrack.addLabel(label);
-        return this.saveTrack(this.currentlyPlayingTrack);
-    }
-
-    async removeLabelFromCurrentlyPlayingTrack(labelId) {
-        await this.currentlyPlayingTrack.removeLabel(labelId);
-        return this.saveTrack(this.currentlyPlayingTrack);
+        args.trackInfo.uploaderInfo = this.currentlyPlayingTrack.uploader.asJSON();
+        return this.connection.runCloudFunction('setCategoryOnTrack', args);
     }
 }

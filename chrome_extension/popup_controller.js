@@ -35,29 +35,11 @@ class PopupController {
         });
     }
 
-    listenToCheckboxChanges() {
-        $("input[type=checkbox]").change(function (checkbox) {
-            const fullCheckboxId = checkbox.target.id;
-            const groupId = fullCheckboxId.substring(fullCheckboxId.indexOf('-') + 1);
-            const message = {
-                subject: 'addLabelToCurrentlyPlayingTrack',
-                labelId: groupId,
-            }
-            chrome.runtime.sendMessage(message);
-        });
-    }
-
     updateAvailableGroups() {
         chrome.runtime.sendMessage({'subject': 'getAllCategories'}, function(response) {
             this.addGroupElements(response.categories, 'category');
             this.listenToRadioChanges();
             this.updateRadioButtonStates();
-        }.bind(this));
-
-        chrome.runtime.sendMessage({'subject': 'getAllLabels'}, function(response) {
-            this.addGroupElements(response.labels, 'label');
-            this.listenToCheckboxChanges();
-            this.updateCheckboxButtonStates();
         }.bind(this));
     }
 
@@ -67,18 +49,6 @@ class PopupController {
             const activeCategory = track.category;
             if (activeCategory != undefined) {
                 $('#group-' + activeCategory.id).click();
-            }
-        }.bind(this));
-    }
-
-    updateCheckboxButtonStates() {
-        chrome.runtime.sendMessage({'subject': 'getCurrentlyPlayingTrack'}, function(response) {
-            const track = response.track;
-            const activeLabels = track.labels;
-            if (activeLabels != undefined) {
-                for (const label of activeLabels) {
-                    $('#group-' + label.id).click();
-                }
             }
         }.bind(this));
     }
@@ -103,12 +73,6 @@ class PopupController {
         }.bind(this));
     }
 
-    updateReposterRatios(reposterId) {
-        chrome.runtime.sendMessage({'subject': 'getGroupRatios', 'profileId': reposterId}, function(response) {
-            this.addGroupRatios(response.ratios);
-        }.bind(this));
-    }
-
     updateTrackName(name) {
         document.getElementById('track-name').innerHTML = name;
     }
@@ -127,24 +91,6 @@ class PopupController {
         } else {
             document.getElementById('track-reposter').innerHTML = reposter.url;
         }
-
-        this.updateReposterRatios(reposter.id);
-    }
-
-    addGroupRatios(ratios) {
-        Object.entries(ratios.categories).forEach(
-            ([categoryName, amount]) => {
-                const element = document.getElementById('category-ratios');
-                element.innerHTML += categoryName + ': ' + amount + ' ';
-            }
-        );
-
-        Object.entries(ratios.labels).forEach(
-            ([labelName, amount]) => {
-                const element = document.getElementById('label-ratios');
-                element.innerHTML += labelName + ': ' + amount + ' ';
-            }
-        );
     }
 
     addGroupElements(groups, groupType) {

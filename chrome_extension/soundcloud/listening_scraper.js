@@ -92,11 +92,11 @@ class ListeningScraper {
         const reposterName = reposterLinkElement.innerText;
 
         const repostTimeElement = streamActionElement.querySelectorAll(REPOST_TIME_SELECTOR)[0];
-        const repostTime = Date.parse(repostTimeElement.getAttribute('datetime'));
+        const repostTimeInSeconds = (Date.parse(repostTimeElement.getAttribute('datetime')))/1000;
 
         return {
             type: 'REPOST',
-            time: repostTime,
+            time: repostTimeInSeconds,
             track: track,
             reposter: {
                 url: reposterUrl,
