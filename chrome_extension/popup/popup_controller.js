@@ -1,7 +1,7 @@
 class PopupController {
     constructor() {
-        this.updateAvailableGroups();
         this.updateTrackInformation();
+        this.updateAvailableCategories();
         this.whenDocumentIsReady(this.showSignInMessage.bind(this));
     }
 
@@ -23,32 +23,35 @@ class PopupController {
         });
     }
 
-    listenToRadioChanges() {
-        $("input[type=radio]").change(function (radioButton) {
-            const fullButtonId = radioButton.target.id;
-            const groupId = fullButtonId.substring(fullButtonId.indexOf('-') + 1);
-            const message = {
-                subject: 'setCategoryOnCurrentlyPlayingTrack',
-                categoryId: groupId,
-            }
-            chrome.runtime.sendMessage(message);
-        });
-    }
-
-    updateAvailableGroups() {
+    updateAvailableCategories() {
         chrome.runtime.sendMessage({'subject': 'getAllCategories'}, function(response) {
-            this.addGroupElements(response.categories, 'category');
-            this.listenToRadioChanges();
-            this.updateRadioButtonStates();
+            this.listenToCategoryClicks();
+            this.updateCategoryButtonStates();
         }.bind(this));
     }
 
-    updateRadioButtonStates() {
+    listenToCategoryClicks() {
+        $(".category").click(function (button) {
+            const categoryId = button.target.id;
+            const message = {
+                subject: 'setCategoryOnCurrentlyPlayingTrack',
+                categoryId: categoryId,
+            }
+            chrome.runtime.sendMessage(message) ;
+            this.updateCategoryButtonStates();
+        }.bind(this));
+    }
+
+    updateCategoryButtonStates() {
         chrome.runtime.sendMessage({'subject': 'getCurrentlyPlayingTrack'}, function(response) {
             const track = response.track;
             const activeCategory = track.category;
+            console.log(track);
             if (activeCategory != undefined) {
-                $('#group-' + activeCategory.id).click();
+                $('.category').removeClass('is-active')
+                $('.category').addClass('is-outlined')
+                $('#' + activeCategory.toLowerCase()).addClass('is-active');
+                $('#' + activeCategory.toLowerCase()).removeClass('is-outlined');
             }
         }.bind(this));
     }
@@ -91,43 +94,6 @@ class PopupController {
         } else {
             document.getElementById('track-reposter').innerHTML = reposter.url;
         }
-    }
-
-    addGroupElements(groups, groupType) {
-        for (const group of groups) {
-            this.addGroupElement(group, groupType);
-        }
-    }
-
-    addGroupElement(group, groupType) {
-        let inputType;
-        if (groupType == 'category') {
-            inputType = 'radio';
-        } else {
-            inputType = 'checkbox';
-        }
-
-        $('#available-' + groupType + '-groups').append(
-             $('<label />', {
-                'text': group.name,
-                'class': 'btn btn-primary'
-             }).append(
-                $('<input />', {
-                    type: inputType,
-                    name: group.name,
-                    id: 'group-' + group.id,
-                    value: group.id,
-                    click: function() {
-                        const message = {
-                            subject: 'toggleGroup',
-                            groupType: groupType,
-                            groupId: group.id,
-                        }
-                        chrome.runtime.sendMessage(message);
-                    }
-                })
-            )
-        );
     }
 }
 

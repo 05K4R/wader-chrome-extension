@@ -2,7 +2,6 @@ class OptionsController {
     constructor() {
         this.updateAccountElements();
         this.updateCategoryElements();
-        this.updateLabelElements();
         this.whenDocumentIsReady(this.setupSignInButton.bind(this));
         this.whenDocumentIsReady(this.setupSignOutButton.bind(this));
     }
@@ -33,7 +32,6 @@ class OptionsController {
             chrome.runtime.sendMessage({'subject': 'signIn'}, this.updateAccountElements.bind(this));
             this.disableSignInButton.bind(this)();
             this.updateCategoryElements.bind(this)();
-            this.updateLabelElements.bind(this)();
         }.bind(this));
     }
 
@@ -42,7 +40,6 @@ class OptionsController {
             chrome.runtime.sendMessage({'subject': 'signOut'}, this.updateAccountElements.bind(this));
             this.disableSignOutButton.bind(this)();
             this.updateCategoryElements.bind(this)();
-            this.updateLabelElements.bind(this)();
         }.bind(this));
     }
 
