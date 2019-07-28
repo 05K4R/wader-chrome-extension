@@ -5,85 +5,36 @@ class FirestoreConnection {
     }
 
     async getObject(collectionName, objectId) {
-        return this.getFirebaseObject(collectionName, objectId)
-            .then(function(document) {
-                 return document.data();
-            });
-    }
-
-    async getCollection(collectionName) {
-        const documents = [];
-        return this.getFirebaseCollection(collectionName)
-            .then(function(collection) {
-                collection.forEach(function(document) {
-                    documents.push(document.data());
-                });
-                return documents;
-            });
+        const document = await this.getFirebaseObject(collectionName, objectId);
+        return document.data();
     }
 
     async objectExists(collectionName, objectId) {
-        return this.getFirebaseObject(collectionName, objectId)
-            .then(function(document) {
-                 return document.exists;
-            });
+        const document = await this.getFirebaseObject(collectionName, objectId);
+        return document.exists;
     }
 
     async getFirebaseObject(collectionName, objectId) {
-        const userId = await this.authenticator.getUserId();
+        const userId = this.authenticator.getUserId();
         return this.db
             .collection(this.getUserCollection())
             .doc(userId)
             .collection(collectionName)
             .doc(objectId)
             .get();
-    }
-
-    async getFirebaseCollection(collectionName) {
-        const userId = await this.authenticator.getUserId();
-        return this.db
-            .collection(this.getUserCollection())
-            .doc(userId)
-            .collection(collectionName)
-            .get();
-    }
-
-    async saveObject(collectionName, objectId, object) {
-        const savableObject = await this.createSavableObject(object);
-        const options = {
-            merge: true
-        }
-        const userId = await this.authenticator.getUserId();
-        return this.db
-            .collection(this.getUserCollection())
-            .doc(userId)
-            .collection(collectionName)
-            .doc(objectId)
-            .set(savableObject, options);
-    }
-
-    async deleteObject(collectionName, objectId) {
-        const userId = await this.authenticator.getUserId();
-        return this.db
-            .collection(this.getUserCollection())
-            .doc(userId)
-            .collection(collectionName)
-            .doc(objectId)
-            .delete();
     }
 
     async runCloudFunction(functionName, args) {
         const cloudFunction = firebase.functions().httpsCallable(functionName);
-        return cloudFunction(args).then(function(result) {
-            return result.data;
-        });
+        const result = await cloudFunction(args);
+        return result.data;
     }
 
-    async createSavableObject(object) {
+    createSavableObject(object) {
         return this.removeInvalidAttributes(object);
     }
 
-    async removeInvalidAttributes(object) {
+    removeInvalidAttributes(object) {
         return JSON.parse(JSON.stringify(object));
     }
 
