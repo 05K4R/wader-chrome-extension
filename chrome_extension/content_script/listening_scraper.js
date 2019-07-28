@@ -24,7 +24,7 @@ class ListeningScraper {
         const currentlyPlayingTrack = this.scrapeCurrentlyPlayingTrack();
         if (currentlyPlayingTrack) {
             const streamAction = this.findStreamActionFor(currentlyPlayingTrack);
-            this.sendNewCurrentlyPlayingStreamAction(streamAction);
+            this.publishNewCurrentlyPlayingStreamAction(streamAction);
         } else {
             console.log('Wader: unable to scrape currently playing track');
         }
@@ -100,7 +100,7 @@ class ListeningScraper {
         }
     }
 
-    sendNewCurrentlyPlayingStreamAction(streamAction) {
+    publishNewCurrentlyPlayingStreamAction(streamAction) {
         chrome.runtime.sendMessage({
             subject: 'newCurrentlyPlayingStreamAction',
             streamAction: streamAction.asJSON(),

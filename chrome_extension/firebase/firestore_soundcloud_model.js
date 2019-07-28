@@ -7,7 +7,6 @@ class FirestoreSoundcloudModel {
 
     newCurrentTrackListener(request, sender, sendResponse) {
         if (request.subject == 'newCurrentlyPlayingStreamAction') {
-            console.log(request.streamAction);
             const streamAction = StreamAction.fromJSON(request.streamAction);
 
             this.saveStreamAction(streamAction).then(() => {
@@ -21,8 +20,18 @@ class FirestoreSoundcloudModel {
     }
 
     async setCurrentlyPlayingStreamAction(streamAction) {
-        streamAction.update(this.connection);
+        const updatedAction = await streamAction.update(this.connection);
+        this.currentlyPlayingStreamAction = updatedAction;
+        this.publishUpdatedCurrentlyPlayingStreamAction();
     }
+
+    publishUpdatedCurrentlyPlayingStreamAction() {
+        chrome.runtime.sendMessage({
+            subject: 'updatedCurrentlyPlayingStreamAction',
+            streamAction: this.currentlyPlayingStreamAction.asJSON(),
+        });
+    }
+
 
 
     async setCurrentlyPlayingTrack(rawTrack, reposted) {
