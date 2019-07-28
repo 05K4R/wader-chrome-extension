@@ -21,9 +21,16 @@ const categories =
 class FirestoreGroupModel {
     constructor(waderFunctions) {
         this.functions = waderFunctions;
+        chrome.runtime.onMessage.addListener(this.groupListener.bind(this));
     }
 
-    async getCategory(categoryId) {
+    groupListener(request, sender, sendResponse) {
+        if (request.subject == 'getAllCategories') {
+            sendResponse({ categories: this.getAllCategories() })
+        }
+    }
+
+    getCategory(categoryId) {
         for (let category of categories) {
             if (category.id == categoryId) {
                 return category;
@@ -31,7 +38,7 @@ class FirestoreGroupModel {
         }
     }
 
-    async getAllCategories() {
+    getAllCategories() {
         return categories;
     }
 

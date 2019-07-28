@@ -9,12 +9,11 @@ class Wader {
             messagingSenderId: '[Your messagingSenderId]'
         });
 
-        const authenticator = new FirebaseAuthenticator();
-        const storageConnection = new FirestoreConnection(authenticator);
-        const waderFunctions = new WaderFunctions(storageConnection);
-        const soundcloudModel = new FirestoreSoundcloudModel(storageConnection, waderFunctions);
-        const groupModel = new FirestoreGroupModel(waderFunctions);
-        this.messageDelegator = new MessageDelegator(soundcloudModel, groupModel, authenticator);
+        this.authenticator = new FirebaseAuthenticator();
+        this.storageConnection = new FirestoreConnection(this.authenticator);
+        this.waderFunctions = new WaderFunctions(this.storageConnection);
+        this.soundcloudModel = new FirestoreSoundcloudModel(this.storageConnection, this.waderFunctions);
+        this.groupModel = new FirestoreGroupModel(this.waderFunctions);
     }
 }
 

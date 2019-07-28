@@ -2,18 +2,22 @@ class FirestoreSoundcloudModel {
     constructor(firestoreConnection, waderFunctions) {
         this.connection = firestoreConnection;
         this.functions = waderFunctions;
-        chrome.runtime.onMessage.addListener(this.newCurrentTrackListener.bind(this));
+        chrome.runtime.onMessage.addListener(this.streamActionListener.bind(this));
     }
 
-    newCurrentTrackListener(request, sender, sendResponse) {
+    streamActionListener(request, sender, sendResponse) {
         if (request.subject == 'newCurrentlyPlayingStreamAction') {
             const streamAction = StreamAction.fromJSON(request.streamAction);
 
             this.saveStreamAction(streamAction).then(() => {
                 this.setCurrentlyPlayingStreamAction(streamAction);
             });
+        } else if (request.subject == 'getCurrentlyPlayingStreamAction') {
+            sendResponse({ streamAction: this.currentlyPlayingStreamAction.asJSON() });
         }
     }
+
+
 
     async saveStreamAction(streamAction) {
         return streamAction.save(this.functions);
