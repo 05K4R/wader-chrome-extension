@@ -30,14 +30,6 @@ class FirestoreGroupModel {
         }
     }
 
-    getCategory(categoryId) {
-        for (let category of categories) {
-            if (category.id == categoryId) {
-                return category;
-            }
-        }
-    }
-
     getAllCategories() {
         return categories;
     }

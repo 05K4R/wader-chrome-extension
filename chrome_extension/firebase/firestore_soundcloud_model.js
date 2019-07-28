@@ -17,8 +17,6 @@ class FirestoreSoundcloudModel {
         }
     }
 
-
-
     async saveStreamAction(streamAction) {
         return streamAction.save(this.functions);
     }
@@ -30,8 +28,6 @@ class FirestoreSoundcloudModel {
     }
 
     publishUpdatedCurrentlyPlayingStreamAction() {
-        console.log('Updated currently playing stream action');
-        console.log(this.currentlyPlayingStreamAction);
         chrome.runtime.sendMessage({
             subject: 'updatedCurrentlyPlayingStreamAction',
             streamAction: this.currentlyPlayingStreamAction.asJSON(),
