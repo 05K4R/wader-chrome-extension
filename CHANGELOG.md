@@ -1,6 +1,15 @@
 # Changelog
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## Unreleased
+### Changed
+- New UI design using Bulma instead of Bootstrap.
+- Backend through Wader Functions instead of direct writes to Firebase.
+- Reworked internal data model.
+
+### Removed
+- Custom category and label management.
+
 ## 0.3.0 - 2019-03-02
 This release only contains internal updates.
 
