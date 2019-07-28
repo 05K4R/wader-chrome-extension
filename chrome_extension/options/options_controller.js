@@ -1,7 +1,6 @@
 class OptionsController {
     constructor() {
         this.updateAccountElements();
-        this.updateCategoryElements();
         this.whenDocumentIsReady(this.setupSignInButton.bind(this));
         this.whenDocumentIsReady(this.setupSignOutButton.bind(this));
     }
@@ -31,7 +30,6 @@ class OptionsController {
         $('#sign-in-button').click(function() {
             chrome.runtime.sendMessage({'subject': 'signIn'}, this.updateAccountElements.bind(this));
             this.disableSignInButton.bind(this)();
-            this.updateCategoryElements.bind(this)();
         }.bind(this));
     }
 
@@ -39,7 +37,6 @@ class OptionsController {
         $('#sign-out-button').click(function() {
             chrome.runtime.sendMessage({'subject': 'signOut'}, this.updateAccountElements.bind(this));
             this.disableSignOutButton.bind(this)();
-            this.updateCategoryElements.bind(this)();
         }.bind(this));
     }
 
@@ -53,55 +50,6 @@ class OptionsController {
                 this.enableSignInButton();
             }
         }.bind(this));
-    }
-
-    updateCategoryElements() {
-        chrome.runtime.sendMessage({'subject': 'getAllCategories'}, function(response) {
-            this.clearAvailableCategoriesDiv();
-            this.addGroupElements(response.categories,'category');
-        }.bind(this));
-    }
-
-    clearAvailableCategoriesDiv() {
-        $('#available-category-groups').empty();
-    }
-
-    clearNewCategoryField() {
-        $('#new-category-name').val('');
-    }
-
-    removeAllCategoryElements() {
-        $('.category').remove();
-    }
-
-    getNameOfNewGroup(groupType) {
-        return $('#new-' + groupType + '-name').val();
-    }
-
-    addGroupElements(groups, groupType) {
-        for (const group of groups) {
-            this.addGroupElement(group, groupType);
-        }
-    }
-
-    addGroupElement(group, groupType) {
-        $('<div/>', {
-            "class": groupType,
-            id: 'group-' + group.id,
-            text: group.name
-        }).appendTo('#available-' + groupType + '-groups');
-
-        $('<button/>', {
-            text: 'Delete',
-            click: function () {
-                const message = {
-                    subject: 'deleteGroup',
-                    groupType: groupType,
-                    groupId: group.id
-                }
-                chrome.runtime.sendMessage(message, this.updateCategoryElements.bind(this));
-            }.bind(this)
-        }).appendTo('#group-' + group.id);
     }
 
     enableSignInButton() {
