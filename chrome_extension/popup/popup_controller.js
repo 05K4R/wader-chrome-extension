@@ -11,12 +11,27 @@ class PopupController {
             const streamAction = StreamAction.fromJSON(request.streamAction);
             this.updateTrackName(streamAction.track.name);
             this.updateTrackUploader(streamAction.track.uploader);
-            this.updateTrackReposter(streamAction.reposter);
+            if (streamAction.reposter) {
+                this.updateTrackReposter(streamAction.reposter);
+            }
+
+            this.currentlyPlayingStreamAction = streamAction;
+            this.updateCategoryButtonStates();
         }
     }
 
-    whenDocumentIsReady(functionToCall) {
-        $(document).ready(functionToCall);
+    updateTrackInformation() {
+        chrome.runtime.sendMessage({'subject': 'getCurrentlyPlayingStreamAction'}, function(response) {
+            const streamAction = StreamAction.fromJSON(response.streamAction);
+            this.updateTrackName(streamAction.track.name);
+            this.updateTrackUploader(streamAction.track.uploader);
+            if (streamAction.reposter) {
+                this.updateTrackReposter(streamAction.reposter);
+            }
+
+            this.currentlyPlayingStreamAction = streamAction;
+            this.updateCategoryButtonStates();
+        }.bind(this));
     }
 
     showSignInMessage() {
@@ -53,26 +68,14 @@ class PopupController {
     }
 
     updateCategoryButtonStates() {
-        chrome.runtime.sendMessage({'subject': 'getCurrentlyPlayingTrack'}, function(response) {
-            const track = response.track;
-            const activeCategory = track.category;
-            console.log(track);
-            if (activeCategory != undefined) {
-                $('.category').removeClass('is-active')
-                $('.category').addClass('is-outlined')
-                $('#' + activeCategory.toLowerCase()).addClass('is-active');
-                $('#' + activeCategory.toLowerCase()).removeClass('is-outlined');
-            }
-        }.bind(this));
-    }
-
-    updateTrackInformation() {
-        chrome.runtime.sendMessage({'subject': 'getCurrentlyPlayingStreamAction'}, function(response) {
-            const streamAction = StreamAction.fromJSON(response.streamAction);
-            this.updateTrackName(streamAction.track.name);
-            this.updateTrackUploader(streamAction.track.uploader);
-            this.updateTrackReposter(streamAction.reposter);
-        }.bind(this));
+        const track = this.currentlyPlayingStreamAction.track;
+        const activeCategory = track.category;
+        if (activeCategory != undefined) {
+            $('.category').removeClass('is-active')
+            $('.category').addClass('is-outlined')
+            $('#' + activeCategory.toLowerCase()).addClass('is-active');
+            $('#' + activeCategory.toLowerCase()).removeClass('is-outlined');
+        }
     }
 
     updateTrackName(name) {
@@ -93,6 +96,10 @@ class PopupController {
         } else {
             document.getElementById('track-reposter').innerHTML = reposter.url;
         }
+    }
+
+    whenDocumentIsReady(functionToCall) {
+        $(document).ready(functionToCall);
     }
 }
 

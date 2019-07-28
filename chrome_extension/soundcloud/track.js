@@ -29,8 +29,8 @@ class Track {
 
     async update(connection) {
         const trackId = this.uploader.url + ';' + this.url;
-        if (await connection.objectExists('track', trackId)) {
-            const track = await connection.getObject('track', trackId);
+        if (await connection.objectExists('tracks', trackId)) {
+            const track = await connection.getObject('tracks', trackId);
             const uploader = await this.uploader.update(connection);
             return new Track(uploader, track.url, track.name, track.category);
         } else {

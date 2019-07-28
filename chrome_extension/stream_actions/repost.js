@@ -26,6 +26,8 @@ class RepostAction extends StreamAction {
     }
 
     async update(connection) {
-        return new RepostAction(await this.track.update(connection), this.time, await this.reposter.update(connection));
+        const track = await this.track.update(connection);
+        const reposter = await this.reposter.update(connection);
+        return new RepostAction(track, this.time, reposter);
     }
 }

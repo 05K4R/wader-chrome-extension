@@ -20,6 +20,7 @@ class UploadAction extends StreamAction {
     }
 
     async update(connection) {
-        return new UploadAction(await this.track.update(connection));
+        const track = await this.track.update(connection);
+        return new UploadAction(track);
     }
 }

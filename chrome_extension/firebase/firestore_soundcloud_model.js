@@ -14,6 +14,10 @@ class FirestoreSoundcloudModel {
             });
         } else if (request.subject == 'getCurrentlyPlayingStreamAction') {
             sendResponse({ streamAction: this.currentlyPlayingStreamAction.asJSON() });
+        } else if (request.subject == 'setCategoryOnCurrentlyPlayingTrack') {
+            this.functions.setCategoryOnTrack(request.categoryId, this.currentlyPlayingStreamAction.track).then(() => {
+                this.setCurrentlyPlayingStreamAction(this.currentlyPlayingStreamAction);
+            });
         }
     }
 
