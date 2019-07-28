@@ -2,7 +2,7 @@
 	"manifest_version": 2,
 
 	"name": "Wader",
-	"description": "Categorize and label tracks posted or reposted by profiles you follow on SoundCloud.",
+	"description": "Categorize tracks posted or reposted by profiles you follow on SoundCloud.",
 	"version": "0.3.0",
 
 	"icons": {
