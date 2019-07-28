@@ -8,11 +8,7 @@ class FirebaseAuthenticator {
 
     authenticationListener(request, sender, sendResponse) {
         if (request.subject == 'userIsSignedIn') {
-            this.userIsSignedIn()
-                .then(function(userIsSignedIn) {
-                    sendResponse({ userIsSignedIn: userIsSignedIn });
-                });
-            return true;
+            sendResponse({ userIsSignedIn: this.userIsSignedIn() });
         } else if (request.subject == 'signIn') {
             this.signIn()
                 .then(function() {
@@ -23,12 +19,6 @@ class FirebaseAuthenticator {
             this.signOut()
                 .then(function() {
                     sendResponse({ status: 'completed'});
-                });
-            return true;
-        } else if (request.subject == 'getUserDisplayName') {
-            this.getUserDisplayName()
-                .then(function(displayName) {
-                    sendResponse({ displayName: displayName });
                 });
             return true;
         }
@@ -42,23 +32,17 @@ class FirebaseAuthenticator {
         return firebase.auth().signOut();
     }
 
-    async userIsSignedIn() {
+    userIsSignedIn() {
         return this.user != null;
     }
 
-    async getUserId() {
+    getUserId() {
         if (this.userIsSignedIn()) {
             return this.user.uid;
         }
     }
 
-    async getUserDisplayName() {
-        if (this.userIsSignedIn()) {
-            return this.user.displayName;
-        }
-    }
-
-    async updateUserStatus(user) {
+    updateUserStatus(user) {
         if (user) {
             console.log('Wader: user signed in');
             this.user = user;
