@@ -9,7 +9,6 @@ class MessageDelegator {
     startListenToMessages() {
         chrome.runtime.onMessage.addListener(this.soundcloudListener.bind(this));
         chrome.runtime.onMessage.addListener(this.groupListener.bind(this));
-        chrome.runtime.onMessage.addListener(this.authenticationListener.bind(this));
     }
 
     soundcloudListener(request, sender, sendResponse) {
@@ -51,34 +50,6 @@ class MessageDelegator {
             this.groupModel.getProfileScore(request.profileUrl)
                 .then(function(score) {
                     sendResponse({ score: score});
-                });
-            return true;
-        }
-    }
-
-    authenticationListener(request, sender, sendResponse) {
-        if (request.subject == 'userIsSignedIn') {
-            this.authenticator.userIsSignedIn()
-                .then(function(userIsSignedIn) {
-                    sendResponse({ userIsSignedIn: userIsSignedIn });
-                });
-            return true;
-        } else if (request.subject == 'signIn') {
-            this.authenticator.signIn()
-                .then(function() {
-                    sendResponse({ status: 'completed'});
-                });
-            return true;
-        } else if (request.subject == 'signOut') {
-            this.authenticator.signOut()
-                .then(function() {
-                    sendResponse({ status: 'completed'});
-                });
-            return true;
-        } else if (request.subject == 'getUserDisplayName') {
-            this.authenticator.getUserDisplayName()
-                .then(function(displayName) {
-                    sendResponse({ displayName: displayName });
                 });
             return true;
         }
