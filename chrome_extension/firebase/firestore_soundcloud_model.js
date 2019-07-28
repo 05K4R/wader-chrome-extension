@@ -1,9 +1,6 @@
 class FirestoreSoundcloudModel {
     constructor(firestoreConnection) {
         this.connection = firestoreConnection;
-        this.reposts = new Collection();
-        this.tracks = new Collection();
-        this.profiles = new Collection();
     }
 
     async setCurrentlyPlayingTrack(rawTrack, reposted) {
