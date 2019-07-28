@@ -3,6 +3,16 @@ class PopupController {
         this.updateTrackInformation();
         this.updateAvailableCategories();
         this.whenDocumentIsReady(this.showSignInMessage.bind(this));
+        chrome.runtime.onMessage.addListener(this.currentlyPlayingListener.bind(this));
+    }
+
+    currentlyPlayingListener(request, sender, sendResponse) {
+        if (request.subject == 'updatedCurrentlyPlayingStreamAction') {
+            const streamAction = StreamAction.fromJSON(request.streamAction);
+            this.updateTrackName(streamAction.track.name);
+            this.updateTrackUploader(streamAction.track.uploader);
+            this.updateTrackReposter(streamAction.reposter);
+        }
     }
 
     whenDocumentIsReady(functionToCall) {
@@ -57,22 +67,11 @@ class PopupController {
     }
 
     updateTrackInformation() {
-        chrome.runtime.sendMessage({'subject': 'currentlyPlayingTrackIsReposted'}, function(response) {
-            if (response.result) {
-                chrome.runtime.sendMessage({'subject': 'getCurrentRepost'}, function(response) {
-                    const repost = response.repost;
-                    const track = repost.track;
-                    this.updateTrackName(track.name);
-                    this.updateTrackUploader(track.uploader);
-                    this.updateTrackReposter(repost.reposter);
-                }.bind(this));
-            } else {
-                chrome.runtime.sendMessage({'subject': 'getCurrentlyPlayingTrack'}, function(response) {
-                    const track = response.track;
-                    this.updateTrackName(track.name);
-                    this.updateTrackUploader(track.uploader);
-                }.bind(this));
-            }
+        chrome.runtime.sendMessage({'subject': 'getCurrentlyPlayingStreamAction'}, function(response) {
+            const streamAction = StreamAction.fromJSON(response.streamAction);
+            this.updateTrackName(streamAction.track.name);
+            this.updateTrackUploader(streamAction.track.uploader);
+            this.updateTrackReposter(streamAction.reposter);
         }.bind(this));
     }
 
