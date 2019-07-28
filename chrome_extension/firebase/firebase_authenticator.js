@@ -3,6 +3,25 @@ class FirebaseAuthenticator {
         this.provider = new firebase.auth.GoogleAuthProvider();
         this.signedIn = false;
         firebase.auth().onAuthStateChanged(this.updateUserStatus.bind(this));
+        chrome.runtime.onMessage.addListener(this.authenticationListener.bind(this));
+    }
+
+    authenticationListener(request, sender, sendResponse) {
+        if (request.subject == 'userIsSignedIn') {
+            sendResponse({ userIsSignedIn: this.userIsSignedIn() });
+        } else if (request.subject == 'signIn') {
+            this.signIn()
+                .then(function() {
+                    sendResponse({ status: 'completed'});
+                });
+            return true;
+        } else if (request.subject == 'signOut') {
+            this.signOut()
+                .then(function() {
+                    sendResponse({ status: 'completed'});
+                });
+            return true;
+        }
     }
 
     async signIn() {
@@ -13,23 +32,17 @@ class FirebaseAuthenticator {
         return firebase.auth().signOut();
     }
 
-    async userIsSignedIn() {
+    userIsSignedIn() {
         return this.user != null;
     }
 
-    async getUserId() {
+    getUserId() {
         if (this.userIsSignedIn()) {
             return this.user.uid;
         }
     }
 
-    async getUserDisplayName() {
-        if (this.userIsSignedIn()) {
-            return this.user.displayName;
-        }
-    }
-
-    async updateUserStatus(user) {
+    updateUserStatus(user) {
         if (user) {
             console.log('Wader: user signed in');
             this.user = user;

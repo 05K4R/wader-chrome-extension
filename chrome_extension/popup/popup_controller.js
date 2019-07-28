@@ -3,10 +3,35 @@ class PopupController {
         this.updateTrackInformation();
         this.updateAvailableCategories();
         this.whenDocumentIsReady(this.showSignInMessage.bind(this));
+        chrome.runtime.onMessage.addListener(this.currentlyPlayingListener.bind(this));
     }
 
-    whenDocumentIsReady(functionToCall) {
-        $(document).ready(functionToCall);
+    currentlyPlayingListener(request, sender, sendResponse) {
+        if (request.subject == 'updatedCurrentlyPlayingStreamAction') {
+            const streamAction = StreamAction.fromJSON(request.streamAction);
+            this.updateTrackName(streamAction.track.name);
+            this.updateTrackUploader(streamAction.track.uploader);
+            if (streamAction.reposter) {
+                this.updateTrackReposter(streamAction.reposter);
+            }
+
+            this.currentlyPlayingStreamAction = streamAction;
+            this.updateCategoryButtonStates();
+        }
+    }
+
+    updateTrackInformation() {
+        chrome.runtime.sendMessage({'subject': 'getCurrentlyPlayingStreamAction'}, function(response) {
+            const streamAction = StreamAction.fromJSON(response.streamAction);
+            this.updateTrackName(streamAction.track.name);
+            this.updateTrackUploader(streamAction.track.uploader);
+            if (streamAction.reposter) {
+                this.updateTrackReposter(streamAction.reposter);
+            }
+
+            this.currentlyPlayingStreamAction = streamAction;
+            this.updateCategoryButtonStates();
+        }.bind(this));
     }
 
     showSignInMessage() {
@@ -43,37 +68,14 @@ class PopupController {
     }
 
     updateCategoryButtonStates() {
-        chrome.runtime.sendMessage({'subject': 'getCurrentlyPlayingTrack'}, function(response) {
-            const track = response.track;
-            const activeCategory = track.category;
-            console.log(track);
-            if (activeCategory != undefined) {
-                $('.category').removeClass('is-active')
-                $('.category').addClass('is-outlined')
-                $('#' + activeCategory.toLowerCase()).addClass('is-active');
-                $('#' + activeCategory.toLowerCase()).removeClass('is-outlined');
-            }
-        }.bind(this));
-    }
-
-    updateTrackInformation() {
-        chrome.runtime.sendMessage({'subject': 'currentlyPlayingTrackIsReposted'}, function(response) {
-            if (response.result) {
-                chrome.runtime.sendMessage({'subject': 'getCurrentRepost'}, function(response) {
-                    const repost = response.repost;
-                    const track = repost.track;
-                    this.updateTrackName(track.name);
-                    this.updateTrackUploader(track.uploader);
-                    this.updateTrackReposter(repost.reposter);
-                }.bind(this));
-            } else {
-                chrome.runtime.sendMessage({'subject': 'getCurrentlyPlayingTrack'}, function(response) {
-                    const track = response.track;
-                    this.updateTrackName(track.name);
-                    this.updateTrackUploader(track.uploader);
-                }.bind(this));
-            }
-        }.bind(this));
+        const track = this.currentlyPlayingStreamAction.track;
+        const activeCategory = track.category;
+        if (activeCategory != undefined) {
+            $('.category').removeClass('is-active')
+            $('.category').addClass('is-outlined')
+            $('#' + activeCategory.toLowerCase()).addClass('is-active');
+            $('#' + activeCategory.toLowerCase()).removeClass('is-outlined');
+        }
     }
 
     updateTrackName(name) {
@@ -94,6 +96,10 @@ class PopupController {
         } else {
             document.getElementById('track-reposter').innerHTML = reposter.url;
         }
+    }
+
+    whenDocumentIsReady(functionToCall) {
+        $(document).ready(functionToCall);
     }
 }
 

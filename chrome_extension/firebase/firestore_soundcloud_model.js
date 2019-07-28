@@ -1,112 +1,40 @@
 class FirestoreSoundcloudModel {
-    constructor(firestoreConnection) {
+    constructor(firestoreConnection, waderFunctions) {
         this.connection = firestoreConnection;
-        this.reposts = new Collection();
-        this.tracks = new Collection();
-        this.profiles = new Collection();
+        this.functions = waderFunctions;
+        chrome.runtime.onMessage.addListener(this.streamActionListener.bind(this));
     }
 
-    async setCurrentlyPlayingTrack(rawTrack, reposted) {
-        const track = await this.getOrCreateTrack(rawTrack);
-        this.currentlyPlayingTrack = track;
+    streamActionListener(request, sender, sendResponse) {
+        if (request.subject == 'newCurrentlyPlayingStreamAction') {
+            const streamAction = StreamAction.fromJSON(request.streamAction);
 
-        if (!reposted) {
-            this.currentRepost = undefined;
-        }
-
-        return this.saveTrack(track);
-    }
-
-    async setCurrentlyPlayingRepostedTrack(rawRepost) {
-        const repostAndTrack = await Promise.all([
-            this.getOrCreateRepost(rawRepost),
-            this.setCurrentlyPlayingTrack(rawRepost.track, true)
-        ]);
-        this.currentRepost = repostAndTrack[0];
-        return this.saveRepost(repostAndTrack[0]);
-    }
-
-    async getCurrentlyPlayingTrack() {
-        return this.currentlyPlayingTrack;
-    }
-
-    async getCurrentRepost() {
-        return this.currentRepost;
-    }
-
-    async currentlyPlayingTrackIsReposted() {
-        return this.currentRepost != null;
-    }
-
-    async getOrCreateRepost(rawRepost) {
-        const reposterAndTrack = await Promise.all([
-            this.getOrCreateProfile(rawRepost.reposter),
-            this.getOrCreateTrack(rawRepost.track)
-        ]);
-        const reposter = reposterAndTrack[0];
-        const track = reposterAndTrack[1];
-        const repost = new Repost(rawRepost, reposter, track);
-        if (await this.connection.objectExists('reposts', repost.getId())) {
-            return new Repost(await this.connection.getObject('reposts', repost.getId()), reposter, track);
-        } else {
-            return repost;
+            this.saveStreamAction(streamAction).then(() => {
+                this.setCurrentlyPlayingStreamAction(streamAction);
+            });
+        } else if (request.subject == 'getCurrentlyPlayingStreamAction') {
+            sendResponse({ streamAction: this.currentlyPlayingStreamAction.asJSON() });
+        } else if (request.subject == 'setCategoryOnCurrentlyPlayingTrack') {
+            this.functions.setCategoryOnTrack(request.categoryId, this.currentlyPlayingStreamAction.track).then(() => {
+                this.setCurrentlyPlayingStreamAction(this.currentlyPlayingStreamAction);
+            });
         }
     }
 
-    async getOrCreateTrack(rawTrack) {
-        const uploader = await this.getOrCreateProfile(rawTrack.uploader);
-        const track = new Track(rawTrack, uploader);
-        if (await this.connection.objectExists('tracks', track.getId())) {
-            return new Track(await this.connection.getObject('tracks', track.getId()), uploader);
-        } else {
-            return track;
-        }
+    async saveStreamAction(streamAction) {
+        return streamAction.save(this.functions);
     }
 
-    async getOrCreateProfile(rawProfile) {
-        const profile = new Profile(rawProfile);
-        if (await this.connection.objectExists('profiles', profile.getId())) {
-            return new Profile(await this.connection.getObject('profiles', profile.getId()));
-        } else {
-            return profile;
-        }
+    async setCurrentlyPlayingStreamAction(streamAction) {
+        const updatedAction = await streamAction.update(this.connection);
+        this.currentlyPlayingStreamAction = updatedAction;
+        this.publishUpdatedCurrentlyPlayingStreamAction();
     }
 
-    async saveRepost(repost) {
-        const args = {
-            repostInfo: repost.asJSON()
-        }
-
-        args.repostInfo.reposterInfo = repost.reposter.asJSON();
-        args.repostInfo.trackInfo = repost.track.asJSON();
-        args.repostInfo.trackInfo.uploaderInfo = repost.track.uploader.asJSON();
-        return this.connection.runCloudFunction('updateRepost', args);
-    }
-
-    async saveTrack(track) {
-        const args = {
-            trackInfo: track.asJSON()
-        }
-
-        args.trackInfo.uploaderInfo = track.uploader.asJSON();
-        return this.connection.runCloudFunction('updateTrack', args);
-    }
-
-    async saveProfile(profile) {
-        const args = {
-            profileInfo: profile.asJSON()
-        };
-
-        return this.connection.runCloudFunction('updateProfile', args);
-    }
-
-    async setCategoryOnCurrentlyPlayingTrack(category) {
-        const args = {
-            category: category.id,
-            trackInfo: this.currentlyPlayingTrack.asJSON()
-        }
-
-        args.trackInfo.uploaderInfo = this.currentlyPlayingTrack.uploader.asJSON();
-        return this.connection.runCloudFunction('setCategoryOnTrack', args);
+    publishUpdatedCurrentlyPlayingStreamAction() {
+        chrome.runtime.sendMessage({
+            subject: 'updatedCurrentlyPlayingStreamAction',
+            streamAction: this.currentlyPlayingStreamAction.asJSON(),
+        });
     }
 }

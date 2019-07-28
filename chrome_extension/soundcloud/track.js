@@ -1,31 +1,40 @@
 class Track {
-    constructor(rawTrack, uploader) {
-        if (rawTrack.url == undefined || uploader == undefined) {
+    constructor(uploader, url, name, category) {
+        if (uploader == undefined || url == undefined) {
             throw new Error('Track does not have all required values');
         }
 
-        this.url = rawTrack.url;
-        this.name = rawTrack.name;
-        this.category = rawTrack.category;
         this.uploader = uploader;
+        this.url = url;
+        this.name = name;
+        this.category = category;
     }
 
-    getId() {
-        return this.uploader.getId() + ';' + this.url;
-    }
-
-    setCategory(category) {
-        this.category = category.id;
-        return this;
+    static fromJSON(json) {
+        return new Track(Profile.fromJSON(json.uploader), json.url, json.name, json.category);
     }
 
     asJSON() {
         return {
-            id: this.getId(),
+            uploader: this.uploader,
             url: this.url,
             name: this.name,
-            category: this.category,
-            uploader: this.uploader.asJSON()
+            category: this.category
+        }
+    }
+
+    async save(functions) {
+        return functions.updateTrack(this);
+    }
+
+    async update(connection) {
+        const trackId = this.uploader.url + ';' + this.url;
+        if (await connection.objectExists('tracks', trackId)) {
+            const track = await connection.getObject('tracks', trackId);
+            const uploader = await this.uploader.update(connection);
+            return new Track(uploader, track.url, track.name, track.category);
+        } else {
+            return this;
         }
     }
 }

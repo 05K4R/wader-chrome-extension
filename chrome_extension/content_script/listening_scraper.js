@@ -24,19 +24,9 @@ class ListeningScraper {
         const currentlyPlayingTrack = this.scrapeCurrentlyPlayingTrack();
         if (currentlyPlayingTrack) {
             const streamAction = this.findStreamActionFor(currentlyPlayingTrack);
-            this.publishStreamAction(streamAction);
+            this.publishNewCurrentlyPlayingStreamAction(streamAction);
         } else {
             console.log('Wader: unable to scrape currently playing track');
-        }
-    }
-
-    publishStreamAction(streamAction) {
-        if (streamAction.type == 'REPOST') {
-            this.sendPlayingRepost(streamAction);
-        } else if (streamAction.type == 'UPLOAD') {
-            this.sendPlayingTrack(streamAction);
-        } else {
-            console.log('Wader: unknown stream action type ' + streamAction.type);
         }
     }
 
@@ -94,22 +84,13 @@ class ListeningScraper {
         const repostTimeElement = streamActionElement.querySelectorAll(REPOST_TIME_SELECTOR)[0];
         const repostTimeInSeconds = (Date.parse(repostTimeElement.getAttribute('datetime')))/1000;
 
-        return {
-            type: 'REPOST',
-            time: repostTimeInSeconds,
-            track: track,
-            reposter: {
-                url: reposterUrl,
-                name: reposterName
-            }
-        };
+        const reposter = new Profile(reposterUrl, reposterName);
+
+        return new RepostAction(track, repostTimeInSeconds, reposter);
     }
 
     createUploadStreamActionFor(track) {
-        return {
-            type: 'UPLOAD',
-            track: track
-        }
+        return new UploadAction(track);
     }
 
     scrapeCurrentlyPlayingTrack() {
@@ -119,23 +100,18 @@ class ListeningScraper {
         }
     }
 
-    sendPlayingTrack(upload) {
+    publishNewCurrentlyPlayingStreamAction(streamAction) {
         chrome.runtime.sendMessage({
-            subject: 'setCurrentlyPlayingTrack',
-            track: upload.track,
-        });
-    }
-
-    sendPlayingRepost(repost) {
-        chrome.runtime.sendMessage({
-            subject: 'setCurrentlyPlayingRepostedTrack',
-            repost: repost,
+            subject: 'newCurrentlyPlayingStreamAction',
+            streamAction: streamAction.asJSON(),
         });
     }
 
     parseTrack(currentTrackTarget) {
         // href attribute formatted as /uploaderUrl/trackUrl?in=playlist
         const splitTrackLink = currentTrackTarget.getAttribute('href').split('?');
+        const uploaderUrl = splitTrackLink[0].split('/')[1];
+        const trackUrl = splitTrackLink[0].split('/')[2];
 
         let name = null;
         if (currentTrackTarget.getAttribute('title')) {
@@ -144,13 +120,9 @@ class ListeningScraper {
             name = currentTrackTarget.innerText;
         }
 
-        return {
-            url: splitTrackLink[0].split('/')[2],
-            name: name,
-            uploader: {
-                url: splitTrackLink[0].split('/')[1],
-            }
-        }
+        const uploader = new Profile(uploaderUrl);
+
+        return new Track(uploader, trackUrl, name);
     }
 }
 
