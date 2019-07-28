@@ -84,7 +84,7 @@ class ListeningScraper {
         const repostTimeElement = streamActionElement.querySelectorAll(REPOST_TIME_SELECTOR)[0];
         const repostTimeInSeconds = (Date.parse(repostTimeElement.getAttribute('datetime')))/1000;
 
-        const reposter = new NewProfile(reposterUrl, reposterName);
+        const reposter = new Profile(reposterUrl, reposterName);
 
         return new RepostAction(track, repostTimeInSeconds, reposter);
     }
@@ -120,9 +120,9 @@ class ListeningScraper {
             name = currentTrackTarget.innerText;
         }
 
-        const uploader = new NewProfile(uploaderUrl);
+        const uploader = new Profile(uploaderUrl);
 
-        return new NewTrack(uploader, trackUrl, name);
+        return new Track(uploader, trackUrl, name);
     }
 }
 

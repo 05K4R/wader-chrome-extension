@@ -1,10 +1,14 @@
 class UploadAction extends StreamAction {
     constructor(track) {
+        if (track == undefined) {
+            throw new Error('Upload does not have all required values');
+        }
+
         super('UPLOAD', track);
     }
 
     static fromJSON(json) {
-        return new UploadAction(NewTrack.fromJSON(json.track));
+        return new UploadAction(Track.fromJSON(json.track));
     }
 
     asJSON() {

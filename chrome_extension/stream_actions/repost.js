@@ -1,12 +1,16 @@
 class RepostAction extends StreamAction {
     constructor(track, time, reposter) {
+        if (track == undefined || time == undefined || reposter == undefined) {
+            throw new Error('Repost does not have all required values');
+        }
+
         super('REPOST', track);
         this.time = time;
         this.reposter = reposter;
     }
 
     static fromJSON(json) {
-        return new RepostAction(NewTrack.fromJSON(json.track), json.time, NewProfile.fromJSON(json.reposter));
+        return new RepostAction(Track.fromJSON(json.track), json.time, Profile.fromJSON(json.reposter));
     }
 
     asJSON() {

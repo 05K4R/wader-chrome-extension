@@ -1,37 +1,9 @@
 class Track {
-    constructor(rawTrack, uploader) {
-        if (rawTrack.url == undefined || uploader == undefined) {
+    constructor(uploader, url, name, category) {
+        if (uploader == undefined || url == undefined) {
             throw new Error('Track does not have all required values');
         }
 
-        this.url = rawTrack.url;
-        this.name = rawTrack.name;
-        this.category = rawTrack.category;
-        this.uploader = uploader;
-    }
-
-    getId() {
-        return this.uploader.getId() + ';' + this.url;
-    }
-
-    setCategory(category) {
-        this.category = category.id;
-        return this;
-    }
-
-    asJSON() {
-        return {
-            id: this.getId(),
-            url: this.url,
-            name: this.name,
-            category: this.category,
-            uploader: this.uploader.asJSON()
-        }
-    }
-}
-
-class NewTrack {
-    constructor(uploader, url, name, category) {
         this.uploader = uploader;
         this.url = url;
         this.name = name;
@@ -39,7 +11,7 @@ class NewTrack {
     }
 
     static fromJSON(json) {
-        return new NewTrack(NewProfile.fromJSON(json.uploader), json.url, json.name, json.category);
+        return new Track(Profile.fromJSON(json.uploader), json.url, json.name, json.category);
     }
 
     asJSON() {
@@ -60,7 +32,7 @@ class NewTrack {
         if (await connection.objectExists('track', trackId)) {
             const track = await connection.getObject('track', trackId);
             const uploader = await this.uploader.update(connection);
-            return new NewTrack(uploader, track.url, track.name, track.category);
+            return new Track(uploader, track.url, track.name, track.category);
         } else {
             return this;
         }
