@@ -13,10 +13,16 @@ class MessageDelegator {
     }
 
     soundcloudListener(request, sender, sendResponse) {
-        if (request.subject == 'setCurrentlyPlayingTrack') {
-            this.soundcloudModel.setCurrentlyPlayingTrack(request.track);
-        } else if (request.subject == 'setCurrentlyPlayingRepostedTrack') {
-            this.soundcloudModel.setCurrentlyPlayingRepostedTrack(request.repost);
+        if (request.subject == 'newCurrentlyPlayingTrack') {
+            if (request.streamAction.type == 'UPLOAD') {
+                this.soundcloudModel.setCurrentlyPlayingTrack(request.track);
+            } else if (request.streamAction.type == 'REPOST') {
+                const streamAction = request.streamAction;
+                streamAction.track = request.track;
+                this.soundcloudModel.setCurrentlyPlayingRepostedTrack(streamAction);
+            } else {
+                // Error, not applicable
+            }
         } else if (request.subject == 'setCategoryOnCurrentlyPlayingTrack') {
             this.groupModel.getCategory(request.categoryId)
                 .then(function(category) {

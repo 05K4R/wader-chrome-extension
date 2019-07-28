@@ -24,19 +24,9 @@ class ListeningScraper {
         const currentlyPlayingTrack = this.scrapeCurrentlyPlayingTrack();
         if (currentlyPlayingTrack) {
             const streamAction = this.findStreamActionFor(currentlyPlayingTrack);
-            this.publishStreamAction(streamAction);
+            this.sendNewCurrentlyPlayingTrack(currentlyPlayingTrack, streamAction);
         } else {
             console.log('Wader: unable to scrape currently playing track');
-        }
-    }
-
-    publishStreamAction(streamAction) {
-        if (streamAction.type == 'REPOST') {
-            this.sendPlayingRepost(streamAction);
-        } else if (streamAction.type == 'UPLOAD') {
-            this.sendPlayingTrack(streamAction);
-        } else {
-            console.log('Wader: unknown stream action type ' + streamAction.type);
         }
     }
 
@@ -119,17 +109,11 @@ class ListeningScraper {
         }
     }
 
-    sendPlayingTrack(upload) {
+    sendNewCurrentlyPlayingTrack(track, streamAction) {
         chrome.runtime.sendMessage({
-            subject: 'setCurrentlyPlayingTrack',
-            track: upload.track,
-        });
-    }
-
-    sendPlayingRepost(repost) {
-        chrome.runtime.sendMessage({
-            subject: 'setCurrentlyPlayingRepostedTrack',
-            repost: repost,
+            subject: 'newCurrentlyPlayingTrack',
+            track: track,
+            streamAction: streamAction,
         });
     }
 
