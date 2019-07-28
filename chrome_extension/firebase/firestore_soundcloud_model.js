@@ -1,6 +1,7 @@
 class FirestoreSoundcloudModel {
-    constructor(firestoreConnection) {
+    constructor(firestoreConnection, waderFunctions) {
         this.connection = firestoreConnection;
+        this.functions = waderFunctions;
     }
 
     async setCurrentlyPlayingTrack(rawTrack, reposted) {
@@ -70,40 +71,18 @@ class FirestoreSoundcloudModel {
     }
 
     async saveRepost(repost) {
-        const args = {
-            repostInfo: repost.asJSON()
-        }
-
-        args.repostInfo.reposterInfo = repost.reposter.asJSON();
-        args.repostInfo.trackInfo = repost.track.asJSON();
-        args.repostInfo.trackInfo.uploaderInfo = repost.track.uploader.asJSON();
-        return this.connection.runCloudFunction('updateRepost', args);
+        return this.functions.updateRepost(repost);
     }
 
     async saveTrack(track) {
-        const args = {
-            trackInfo: track.asJSON()
-        }
-
-        args.trackInfo.uploaderInfo = track.uploader.asJSON();
-        return this.connection.runCloudFunction('updateTrack', args);
+        return this.functions.updateTrack(track);
     }
 
     async saveProfile(profile) {
-        const args = {
-            profileInfo: profile.asJSON()
-        };
-
-        return this.connection.runCloudFunction('updateProfile', args);
+        return this.functions.updateProfile(profile);
     }
 
     async setCategoryOnCurrentlyPlayingTrack(category) {
-        const args = {
-            category: category.id,
-            trackInfo: this.currentlyPlayingTrack.asJSON()
-        }
-
-        args.trackInfo.uploaderInfo = this.currentlyPlayingTrack.uploader.asJSON();
-        return this.connection.runCloudFunction('setCategoryOnTrack', args);
+        return this.functions.setCategoryOnTrack(category.id, this.currentlyPlayingTrack);
     }
 }

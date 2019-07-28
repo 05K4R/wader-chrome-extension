@@ -11,8 +11,9 @@ class Wader {
 
         const authenticator = new FirebaseAuthenticator();
         const storageConnection = new FirestoreConnection(authenticator);
-        const soundcloudModel = new FirestoreSoundcloudModel(storageConnection);
-        const groupModel = new FirestoreGroupModel(storageConnection);
+        const waderFunctions = new WaderFunctions(storageConnection);
+        const soundcloudModel = new FirestoreSoundcloudModel(storageConnection, waderFunctions);
+        const groupModel = new FirestoreGroupModel(waderFunctions);
         this.messageDelegator = new MessageDelegator(soundcloudModel, groupModel, authenticator);
     }
 }

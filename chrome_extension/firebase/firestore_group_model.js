@@ -19,8 +19,8 @@ const categories =
         ];
 
 class FirestoreGroupModel {
-    constructor(firestoreConnection) {
-        this.connection = firestoreConnection;
+    constructor(waderFunctions) {
+        this.functions = waderFunctions;
     }
 
     async getCategory(categoryId) {
@@ -36,12 +36,6 @@ class FirestoreGroupModel {
     }
 
     async getProfileScore(profileUrl) {
-        const args = {
-            profileinfo: {
-                url: profileUrl
-            }
-        };
-
-        return this.connection.runcloudfunction('getProfileScore', args);
+        return this.functions.getProfileScore(profileUrl);
     }
 }
