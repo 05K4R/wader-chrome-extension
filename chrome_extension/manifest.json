@@ -27,7 +27,15 @@
 	"content_scripts": [
 		{
 			"matches": [ "*://soundcloud.com/stream"],
-			"js": ["content_script/listening_scraper.js"],
+			"js": [
+				"content_script/listening_scraper.js",
+				"stream_actions/stream_action.js",
+				"stream_actions/repost.js",
+				"stream_actions/upload.js",
+				"soundcloud/track.js",
+				"soundcloud/profile.js",
+				"soundcloud/repost.js"
+			],
 			"run_at": "document_end"
 		}
 	],

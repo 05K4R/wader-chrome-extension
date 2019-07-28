@@ -20,3 +20,34 @@ class Profile {
         }
     }
 }
+
+class NewProfile {
+    constructor(url, name) {
+        this.url = url;
+        this.name = name;
+    }
+
+    static fromJSON(json) {
+        return new NewProfile(json.url, json.name);
+    }
+
+    asJSON() {
+        return {
+            url: this.url,
+            name: this.name,
+        }
+    }
+
+    async save(functions) {
+        return functions.updateProfile(this);
+    }
+
+    async update(connection) {
+        if (await connection.objectExists('profiles', this.url)) {
+            const profile = await connection.getObject('profiles', this.url);
+            return new NewProfile(profile.url, profile.name);
+        } else {
+            return this;
+        }
+    }
+}

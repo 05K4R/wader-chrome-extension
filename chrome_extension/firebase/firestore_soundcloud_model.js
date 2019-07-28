@@ -6,18 +6,24 @@ class FirestoreSoundcloudModel {
     }
 
     newCurrentTrackListener(request, sender, sendResponse) {
-        if (request.subject == 'newCurrentlyPlayingTrack') {
-            if (request.streamAction.type == 'UPLOAD') {
-                this.setCurrentlyPlayingTrack(request.track);
-            } else if (request.streamAction.type == 'REPOST') {
-                const streamAction = request.streamAction;
-                streamAction.track = request.track;
-                this.setCurrentlyPlayingRepostedTrack(streamAction);
-            } else {
-                console.log('Stream action type not recognized: ' + request.streamAction.type);
-            }
+        if (request.subject == 'newCurrentlyPlayingStreamAction') {
+            console.log(request.streamAction);
+            const streamAction = StreamAction.fromJSON(request.streamAction);
+
+            this.saveStreamAction(streamAction).then(() => {
+                this.setCurrentlyPlayingStreamAction(streamAction);
+            });
         }
     }
+
+    async saveStreamAction(streamAction) {
+        return streamAction.save(this.functions);
+    }
+
+    async setCurrentlyPlayingStreamAction(streamAction) {
+        streamAction.update(this.connection);
+    }
+
 
     async setCurrentlyPlayingTrack(rawTrack, reposted) {
         const track = await this.getOrCreateTrack(rawTrack);

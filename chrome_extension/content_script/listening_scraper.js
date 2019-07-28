@@ -24,7 +24,7 @@ class ListeningScraper {
         const currentlyPlayingTrack = this.scrapeCurrentlyPlayingTrack();
         if (currentlyPlayingTrack) {
             const streamAction = this.findStreamActionFor(currentlyPlayingTrack);
-            this.sendNewCurrentlyPlayingTrack(currentlyPlayingTrack, streamAction);
+            this.sendNewCurrentlyPlayingStreamAction(streamAction);
         } else {
             console.log('Wader: unable to scrape currently playing track');
         }
@@ -84,22 +84,13 @@ class ListeningScraper {
         const repostTimeElement = streamActionElement.querySelectorAll(REPOST_TIME_SELECTOR)[0];
         const repostTimeInSeconds = (Date.parse(repostTimeElement.getAttribute('datetime')))/1000;
 
-        return {
-            type: 'REPOST',
-            time: repostTimeInSeconds,
-            track: track,
-            reposter: {
-                url: reposterUrl,
-                name: reposterName
-            }
-        };
+        const reposter = new NewProfile(reposterUrl, reposterName);
+
+        return new RepostAction(track, repostTimeInSeconds, reposter);
     }
 
     createUploadStreamActionFor(track) {
-        return {
-            type: 'UPLOAD',
-            track: track
-        }
+        return new UploadAction(track);
     }
 
     scrapeCurrentlyPlayingTrack() {
@@ -109,17 +100,18 @@ class ListeningScraper {
         }
     }
 
-    sendNewCurrentlyPlayingTrack(track, streamAction) {
+    sendNewCurrentlyPlayingStreamAction(streamAction) {
         chrome.runtime.sendMessage({
-            subject: 'newCurrentlyPlayingTrack',
-            track: track,
-            streamAction: streamAction,
+            subject: 'newCurrentlyPlayingStreamAction',
+            streamAction: streamAction.asJSON(),
         });
     }
 
     parseTrack(currentTrackTarget) {
         // href attribute formatted as /uploaderUrl/trackUrl?in=playlist
         const splitTrackLink = currentTrackTarget.getAttribute('href').split('?');
+        const uploaderUrl = splitTrackLink[0].split('/')[1];
+        const trackUrl = splitTrackLink[0].split('/')[2];
 
         let name = null;
         if (currentTrackTarget.getAttribute('title')) {
@@ -128,13 +120,9 @@ class ListeningScraper {
             name = currentTrackTarget.innerText;
         }
 
-        return {
-            url: splitTrackLink[0].split('/')[2],
-            name: name,
-            uploader: {
-                url: splitTrackLink[0].split('/')[1],
-            }
-        }
+        const uploader = new NewProfile(uploaderUrl);
+
+        return new NewTrack(uploader, trackUrl, name);
     }
 }
 
