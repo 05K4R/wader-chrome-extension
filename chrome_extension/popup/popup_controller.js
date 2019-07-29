@@ -8,30 +8,22 @@ class PopupController {
 
     currentlyPlayingListener(request, sender, sendResponse) {
         if (request.subject == 'updatedCurrentlyPlayingStreamAction') {
-            const streamAction = StreamAction.fromJSON(request.streamAction);
-            this.updateTrackName(streamAction.track.name);
-            this.updateTrackUploader(streamAction.track.uploader);
-            if (streamAction.reposter) {
-                this.updateTrackReposter(streamAction.reposter);
-            }
-
-            this.currentlyPlayingStreamAction = streamAction;
-            this.updateCategoryButtonStates();
+            this.updatePage(StreamAction.fromJSON(request.streamAction));
         }
     }
 
     updateTrackInformation() {
         chrome.runtime.sendMessage({'subject': 'getCurrentlyPlayingStreamAction'}, function(response) {
-            const streamAction = StreamAction.fromJSON(response.streamAction);
-            this.updateTrackName(streamAction.track.name);
-            this.updateTrackUploader(streamAction.track.uploader);
-            if (streamAction.reposter) {
-                this.updateTrackReposter(streamAction.reposter);
-            }
-
-            this.currentlyPlayingStreamAction = streamAction;
-            this.updateCategoryButtonStates();
+            this.updatePage(StreamAction.fromJSON(response.streamAction));
         }.bind(this));
+    }
+
+    updatePage(streamAction) {
+        this.updateTrackName(streamAction.track.name);
+        this.updateTrackUploader(streamAction.track.uploader);
+        this.updateTrackReposter(streamAction.reposter);
+        this.currentlyPlayingStreamAction = streamAction;
+        this.updateCategoryButtonStates();
     }
 
     showSignInMessage() {
@@ -91,10 +83,12 @@ class PopupController {
     }
 
     updateTrackReposter(reposter) {
-        if (reposter.name != null) {
+        if (reposter && reposter.name != null) {
             document.getElementById('track-reposter').innerHTML = reposter.name;
-        } else {
+        } else if (reposter && reposter.url != null){
             document.getElementById('track-reposter').innerHTML = reposter.url;
+        } else {
+            document.getElementById('track-reposter').innerHTML = '';
         }
     }
 
