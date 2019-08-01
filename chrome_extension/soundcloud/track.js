@@ -23,15 +23,15 @@ class Track {
         }
     }
 
-    async save(functions) {
-        return functions.updateTrack(this);
+    async save(backend) {
+        return backend.functions.updateTrack(this);
     }
 
-    async update(connection) {
+    async update(backend) {
         const trackId = this.uploader.url + ';' + this.url;
-        if (await connection.objectExists('tracks', trackId)) {
-            const track = await connection.getObject('tracks', trackId);
-            const uploader = await this.uploader.update(connection);
+        if (await backend.connection.objectExists('tracks', trackId)) {
+            const track = await backend.connection.getObject('tracks', trackId);
+            const uploader = await this.uploader.update(backend);
             return new Track(uploader, track.url, track.name, track.category);
         } else {
             return this;

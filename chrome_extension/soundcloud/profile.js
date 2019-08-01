@@ -19,13 +19,13 @@ class Profile {
         }
     }
 
-    async save(functions) {
-        return functions.updateProfile(this);
+    async save(backend) {
+        return backend.functions.updateProfile(this);
     }
 
-    async update(connection) {
-        if (await connection.objectExists('profiles', this.url)) {
-            const profile = await connection.getObject('profiles', this.url);
+    async update(backend) {
+        if (await backend.connection.objectExists('profiles', this.url)) {
+            const profile = await backend.connection.getObject('profiles', this.url);
             return new Profile(profile.url, profile.name);
         } else {
             return this;

@@ -19,8 +19,8 @@ const categories =
         ];
 
 class FirestoreGroupModel {
-    constructor(waderFunctions) {
-        this.functions = waderFunctions;
+    constructor(backend) {
+        this.backend = backend;
         chrome.runtime.onMessage.addListener(this.groupListener.bind(this));
     }
 
@@ -41,6 +41,6 @@ class FirestoreGroupModel {
     }
 
     async getProfileScore(profileUrl) {
-        return this.functions.getProfileScore(profileUrl);
+        return this.backend.functions.getProfileScore(profileUrl);
     }
 }

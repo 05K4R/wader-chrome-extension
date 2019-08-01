@@ -9,11 +9,9 @@ class Wader {
             messagingSenderId: '[Your messagingSenderId]'
         });
 
-        this.authenticator = new FirebaseAuthenticator();
-        this.storageConnection = new FirestoreConnection(this.authenticator);
-        this.waderFunctions = new WaderFunctions(this.storageConnection);
-        this.soundcloudModel = new FirestoreSoundcloudModel(this.storageConnection, this.waderFunctions);
-        this.groupModel = new FirestoreGroupModel(this.waderFunctions);
+        this.backend = new WaderBackend();
+        this.soundcloudModel = new FirestoreSoundcloudModel(this.backend);
+        this.groupModel = new FirestoreGroupModel(this.backend);
     }
 }
 

@@ -21,13 +21,13 @@ class RepostAction extends StreamAction {
         return json;
     }
 
-    async save(functions) {
-        return functions.updateRepost(this);
+    async save(backend) {
+        return backend.functions.updateRepost(this);
     }
 
-    async update(connection) {
-        const track = await this.track.update(connection);
-        const reposter = await this.reposter.update(connection);
+    async update(backend) {
+        const track = await this.track.update(backend);
+        const reposter = await this.reposter.update(backend);
         return new RepostAction(track, this.time, reposter);
     }
 }
