@@ -27,6 +27,12 @@ class FirestoreGroupModel {
     groupListener(request, sender, sendResponse) {
         if (request.subject == 'getAllCategories') {
             sendResponse({ categories: this.getAllCategories() })
+        } else if (request.subject == 'getProfileScore') {
+            this.getProfileScore(request.profileId)
+                .then(function(score) {
+                    sendResponse({ score: score});
+                });
+            return true;
         }
     }
 

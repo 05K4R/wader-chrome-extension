@@ -80,6 +80,21 @@ class PopupController {
         } else {
             document.getElementById('track-uploader').innerHTML = uploader.url;
         }
+
+        this.updateTrackUploaderRating(uploader);
+    }
+
+    updateTrackUploaderRating(uploader) {
+        chrome.runtime.sendMessage({'subject': 'getProfileScore', 'profileId': uploader.url}, function(response) {
+            const score = response.score;
+            if (score > 0) {
+                document.getElementById('track-uploader-rating').innerHTML = 'Good quality tracks, keep following!';
+            } else if (score < 0) {
+                document.getElementById('track-uploader-rating').innerHTML = 'Bad quality tracks, unfollow!';
+            } else {
+                document.getElementById('track-uploader-rating').innerHTML = 'Keep categorizing tracks to get a rating';
+            }
+        }.bind(this));
     }
 
     updateTrackReposter(reposter) {
@@ -90,6 +105,28 @@ class PopupController {
         } else {
             document.getElementById('track-reposter').innerHTML = '';
         }
+
+        this.updateTrackReposterRating(reposter);
+    }
+
+    updateTrackReposterRating(reposter) {
+        if (reposter) {
+            chrome.runtime.sendMessage({'subject': 'getProfileScore', 'profileId': reposter.url}, function(response) {
+                const score = response.score;
+                if (score > 0) {
+                    document.getElementById('track-reposter-rating').innerHTML = 'Good quality tracks, keep following!';
+                } else if (score < 0) {
+                    document.getElementById('track-reposter-rating').innerHTML = 'Bad quality tracks, unfollow!';
+                } else {
+                    document.getElementById('track-reposter-rating').innerHTML = 'Keep categorizing tracks to get a rating';
+                }
+            }.bind(this));
+        } else {
+            document.getElementById('track-reposter-rating').innerHTML = '';
+        }
+    }
+
+    async getProfileRating(profile) {
     }
 
     whenDocumentIsReady(functionToCall) {

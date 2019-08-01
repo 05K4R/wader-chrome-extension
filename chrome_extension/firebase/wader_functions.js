@@ -43,11 +43,10 @@ class WaderFunctions {
 
     async getProfileScore(profileUrl) {
         const args = {
-            profileinfo: {
+            profileInfo: {
                 url: profileUrl
             }
         };
-
         return this.connection.runCloudFunction('getProfileScore', args);
     }
 }
