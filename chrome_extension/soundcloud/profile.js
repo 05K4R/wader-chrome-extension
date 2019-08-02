@@ -19,16 +19,9 @@ class Profile {
         }
     }
 
-    async save(backend) {
-        return backend.updateProfile(this);
-    }
-
     async update(backend) {
-        if (await backend.objectExists('profiles', this.url)) {
-            const profile = await backend.getObject('profiles', this.url);
-            return new Profile(profile.url, profile.name);
-        } else {
-            return this;
-        }
+        await backend.updateProfile(this);
+        const profile = await backend.getObject('profiles', this.url);
+        return new Profile(profile.url, profile.name);
     }
 }

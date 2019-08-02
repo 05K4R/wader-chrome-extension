@@ -20,7 +20,7 @@ class FirestoreSoundcloudModel {
     }
 
     async saveStreamAction(streamAction) {
-        return streamAction.save(this.backend);
+        return streamAction.update(this.backend);
     }
 
     async setCurrentlyPlayingStreamAction(streamAction) {

@@ -15,10 +15,6 @@ class UploadAction extends StreamAction {
         return super.asJSON();
     }
 
-    async save(backend) {
-        return this.track.save(backend);
-    }
-
     async update(backend) {
         const track = await this.track.update(backend);
         return new UploadAction(track);
