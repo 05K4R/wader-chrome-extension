@@ -29,11 +29,11 @@
 			"matches": [ "*://soundcloud.com/stream"],
 			"js": [
 				"content_script/listening_scraper.js",
-				"stream_actions/stream_action.js",
-				"stream_actions/repost.js",
-				"stream_actions/upload.js",
-				"soundcloud/track.js",
-				"soundcloud/profile.js"
+				"data_classes/stream_action.js",
+				"data_classes/repost.js",
+				"data_classes/upload.js",
+				"data_classes/track.js",
+				"data_classes/profile.js"
 			],
 			"run_at": "document_end"
 		}

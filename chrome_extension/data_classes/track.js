@@ -24,10 +24,6 @@ class Track {
     }
 
     async update(backend) {
-        await backend.updateTrack(this);
-        const trackId = this.uploader.url + ';' + this.url;
-        const track = await backend.getObject('tracks', trackId);
-        const uploader = await this.uploader.update(backend);
-        return new Track(uploader, track.url, track.name, track.category);
+        return backend.updateTrack(this);
     }
 }

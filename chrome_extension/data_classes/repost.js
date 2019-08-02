@@ -17,14 +17,10 @@ class RepostAction extends StreamAction {
         const json = super.asJSON();
         json.time = this.time;
         json.reposter = this.reposter.asJSON();
-
         return json;
     }
 
     async update(backend) {
-        await backend.updateRepost(this);
-        const track = await this.track.update(backend);
-        const reposter = await this.reposter.update(backend);
-        return new RepostAction(track, this.time, reposter);
+        return backend.updateRepost(this);
     }
 }
