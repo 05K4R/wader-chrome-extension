@@ -1,6 +1,7 @@
 class FirestoreSoundcloudModel {
     constructor(backend) {
         this.backend = backend;
+        this.currentlyPlayingStreamAction = null;
         chrome.runtime.onMessage.addListener(this.streamActionListener.bind(this));
     }
 
