@@ -10,8 +10,7 @@ class Wader {
         });
 
         this.backend = new WaderBackend();
-        this.soundcloudModel = new FirestoreSoundcloudModel(this.backend);
-        this.groupModel = new FirestoreGroupModel(this.backend);
+        this.controller = new WaderController(this.backend);
     }
 }
 

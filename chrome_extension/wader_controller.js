@@ -1,4 +1,4 @@
-class FirestoreSoundcloudModel {
+class WaderController {
     constructor(backend) {
         this.backend = backend;
         this.currentlyPlayingStreamAction = null;
