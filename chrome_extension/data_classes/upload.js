@@ -16,7 +16,6 @@ class UploadAction extends StreamAction {
     }
 
     async update(backend) {
-        const track = await this.track.update(backend);
-        return new UploadAction(track);
+        return backend.updateTrack(this);
     }
 }

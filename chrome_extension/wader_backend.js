@@ -24,14 +24,14 @@ class WaderBackend {
         await this.functions.updateTrack(track);
         const trackId = track.uploader.url + ';' + track.url;
         const updatedTrack = await this.getObject('tracks', trackId);
-        const uploader = await track.uploader.update(this);
+        const uploader = await this.updateProfile(track.uploader);
         return new Track(uploader, updatedTrack.url, updatedTrack.name, updatedTrack.category);
     }
 
     async updateRepost(repost) {
         await this.functions.updateRepost(repost);
-        const track = await repost.track.update(this);
-        const reposter = await repost.reposter.update(this);
+        const track = await this.updateTrack(repost.track);
+        const reposter = await this.updateProfile(repost.reposter);
         return new RepostAction(track, repost.time, reposter);
     }
 
