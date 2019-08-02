@@ -22,7 +22,7 @@ class RepostAction extends StreamAction {
     }
 
     async save(backend) {
-        return backend.functions.updateRepost(this);
+        return backend.updateRepost(this);
     }
 
     async update(backend) {

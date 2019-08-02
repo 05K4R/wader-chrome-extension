@@ -24,13 +24,13 @@ class Track {
     }
 
     async save(backend) {
-        return backend.functions.updateTrack(this);
+        return backend.updateTrack(this);
     }
 
     async update(backend) {
         const trackId = this.uploader.url + ';' + this.url;
-        if (await backend.connection.objectExists('tracks', trackId)) {
-            const track = await backend.connection.getObject('tracks', trackId);
+        if (await backend.objectExists('tracks', trackId)) {
+            const track = await backend.getObject('tracks', trackId);
             const uploader = await this.uploader.update(backend);
             return new Track(uploader, track.url, track.name, track.category);
         } else {

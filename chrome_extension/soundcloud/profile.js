@@ -20,12 +20,12 @@ class Profile {
     }
 
     async save(backend) {
-        return backend.functions.updateProfile(this);
+        return backend.updateProfile(this);
     }
 
     async update(backend) {
-        if (await backend.connection.objectExists('profiles', this.url)) {
-            const profile = await backend.connection.getObject('profiles', this.url);
+        if (await backend.objectExists('profiles', this.url)) {
+            const profile = await backend.getObject('profiles', this.url);
             return new Profile(profile.url, profile.name);
         } else {
             return this;

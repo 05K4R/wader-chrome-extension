@@ -6,15 +6,11 @@ class FirestoreGroupModel {
 
     groupListener(request, sender, sendResponse) {
         if (request.subject == 'getProfileScore') {
-            this.getProfileScore(request.profileId)
+            this.backend.getProfileScore(request.profileId)
                 .then(function(score) {
                     sendResponse({ score: score});
                 });
             return true;
         }
-    }
-
-    async getProfileScore(profileUrl) {
-        return this.backend.functions.getProfileScore(profileUrl);
     }
 }
