@@ -1,7 +1,7 @@
 # Changelog
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## Unreleased
+## 0.4.0 - 2019-08-03
 ### Added
 - Profile ratings shown in the popup.
 
