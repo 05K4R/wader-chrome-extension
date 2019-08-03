@@ -1,29 +1,48 @@
 class PopupController {
     constructor() {
-        this.updateTrackInformation();
-        this.updateAvailableCategories();
+        this.whenDocumentIsReady(this.updatePopup.bind(this));
         this.whenDocumentIsReady(this.showSignInMessage.bind(this));
+        this.whenDocumentIsReady(this.listenToCategoryClicks.bind(this));
         chrome.runtime.onMessage.addListener(this.currentlyPlayingListener.bind(this));
     }
 
     currentlyPlayingListener(request, sender, sendResponse) {
         if (request.subject == 'updatedCurrentlyPlayingStreamAction') {
-            this.updatePage(StreamAction.fromJSON(request.streamAction));
+            this.updatePopup();
+        } else if (request.subject == 'newCurrentlyPlayingStreamAction') {
+            this.updatePopup();
         }
     }
 
-    updateTrackInformation() {
-        chrome.runtime.sendMessage({'subject': 'getCurrentlyPlayingStreamAction'}, function(response) {
-            this.updatePage(StreamAction.fromJSON(response.streamAction));
+    listenToCategoryClicks() {
+        $(".category").click(function(button) {
+            const categoryId = button.target.id;
+            const message = {
+                subject: 'setCategoryOnCurrentlyPlayingTrack',
+                categoryId: categoryId,
+            }
+            $('#' + categoryId).removeClass('is-active');
+            $('#' + categoryId).removeClass('is-outlined');
+            $('#' + categoryId).addClass('is-loading');
+            chrome.runtime.sendMessage(message) ;
         }.bind(this));
     }
 
-    updatePage(streamAction) {
-        this.updateTrackName(streamAction.track.name);
-        this.updateTrackUploader(streamAction.track.uploader);
-        this.updateTrackReposter(streamAction.reposter);
-        this.currentlyPlayingStreamAction = streamAction;
-        this.updateCategoryButtonStates();
+    updatePopup() {
+        chrome.runtime.sendMessage({'subject': 'currentTrackIsLoading'}, function(response) {
+            if (response.isLoading) {
+                this.showLoadingMessage();
+            } else {
+                this.updateCurrentStreamAction();
+            }
+        }.bind(this));
+    }
+
+    updateCurrentStreamAction() {
+        chrome.runtime.sendMessage({'subject': 'getCurrentlyPlayingStreamAction'}, function(response) {
+            this.updateTrackInformation(StreamAction.fromJSON(response.streamAction));
+            this.hideLoadingMessage();
+        }.bind(this));
     }
 
     showSignInMessage() {
@@ -40,34 +59,11 @@ class PopupController {
         });
     }
 
-    updateAvailableCategories() {
-        chrome.runtime.sendMessage({'subject': 'getAllCategories'}, function(response) {
-            this.listenToCategoryClicks();
-            this.updateCategoryButtonStates();
-        }.bind(this));
-    }
-
-    listenToCategoryClicks() {
-        $(".category").click(function (button) {
-            const categoryId = button.target.id;
-            const message = {
-                subject: 'setCategoryOnCurrentlyPlayingTrack',
-                categoryId: categoryId,
-            }
-            chrome.runtime.sendMessage(message) ;
-            this.updateCategoryButtonStates();
-        }.bind(this));
-    }
-
-    updateCategoryButtonStates() {
-        const track = this.currentlyPlayingStreamAction.track;
-        const activeCategory = track.category;
-        if (activeCategory != null) {
-            $('.category').removeClass('is-active')
-            $('.category').addClass('is-outlined')
-            $('#' + activeCategory.toLowerCase()).addClass('is-active');
-            $('#' + activeCategory.toLowerCase()).removeClass('is-outlined');
-        }
+    updateTrackInformation(streamAction) {
+        this.updateTrackName(streamAction.track.name);
+        this.updateTrackUploader(streamAction.track.uploader);
+        this.updateTrackReposter(streamAction.reposter);
+        this.updateTrackCategory(streamAction.track);
     }
 
     updateTrackName(name) {
@@ -80,8 +76,18 @@ class PopupController {
         } else {
             document.getElementById('track-uploader').innerHTML = uploader.url;
         }
-
         this.updateTrackUploaderRating(uploader);
+    }
+
+    updateTrackReposter(reposter) {
+        if (reposter != null && reposter.name != null) {
+            document.getElementById('track-reposter').innerHTML = reposter.name;
+        } else if (reposter && reposter.url != null){
+            document.getElementById('track-reposter').innerHTML = reposter.url;
+        } else {
+            document.getElementById('track-reposter').innerHTML = '';
+        }
+        this.updateTrackReposterRating(reposter);
     }
 
     updateTrackUploaderRating(uploader) {
@@ -93,18 +99,6 @@ class PopupController {
         } else {
             document.getElementById('track-uploader-rating').innerHTML = 'Keep categorizing tracks to get a rating';
         }
-    }
-
-    updateTrackReposter(reposter) {
-        if (reposter != null && reposter.name != null) {
-            document.getElementById('track-reposter').innerHTML = reposter.name;
-        } else if (reposter && reposter.url != null){
-            document.getElementById('track-reposter').innerHTML = reposter.url;
-        } else {
-            document.getElementById('track-reposter').innerHTML = '';
-        }
-
-        this.updateTrackReposterRating(reposter);
     }
 
     updateTrackReposterRating(reposter) {
@@ -120,6 +114,25 @@ class PopupController {
         } else {
             document.getElementById('track-reposter-rating').innerHTML = '';
         }
+    }
+
+    updateTrackCategory(track) {
+        $('.category').removeClass('is-active')
+        $('.category').removeClass('is-loading')
+        $('.category').addClass('is-outlined')
+        const activeCategory = track.category;
+        if (activeCategory != null) {
+            $('#' + activeCategory.toLowerCase()).addClass('is-active');
+            $('#' + activeCategory.toLowerCase()).removeClass('is-outlined');
+        }
+    }
+
+    showLoadingMessage() {
+        document.getElementById('loading-track').innerHTML = 'Loading track...';
+    }
+
+    hideLoadingMessage() {
+        document.getElementById('loading-track').innerHTML = '';
     }
 
     whenDocumentIsReady(functionToCall) {

@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 - New UI design using Bulma instead of Bootstrap.
+- Popup is now more responsive to track changes.
 - Backend through Wader Functions instead of direct writes to Firebase.
 - Reworked internal data model.
 

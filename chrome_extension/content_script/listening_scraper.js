@@ -26,7 +26,7 @@ class ListeningScraper {
             const streamAction = this.findStreamActionFor(currentlyPlayingTrack);
             this.publishNewCurrentlyPlayingStreamAction(streamAction);
         } else {
-            console.log('Wader: unable to scrape currently playing track');
+            console.error('Wader: unable to scrape currently playing track');
         }
     }
 
