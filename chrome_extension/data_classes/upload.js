@@ -16,6 +16,6 @@ class UploadAction extends StreamAction {
     }
 
     async update(backend) {
-        return backend.updateTrack(this);
+        return backend.updateUpload(this);
     }
 }

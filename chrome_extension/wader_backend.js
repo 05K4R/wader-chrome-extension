@@ -35,6 +35,11 @@ class WaderBackend {
         return new RepostAction(track, repost.time, reposter);
     }
 
+    async updateUpload(upload) {
+        const track = await this.updateTrack(upload.track);
+        return new UploadAction(track);
+    }
+
     async objectExists(collectionName, objectId) {
         return this.connection.objectExists(collectionName, objectId);
     }
