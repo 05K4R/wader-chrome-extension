@@ -1,6 +1,6 @@
 class UploadAction extends StreamAction {
     constructor(track) {
-        if (track == undefined) {
+        if (track == null) {
             throw new Error('Upload does not have all required values');
         }
 

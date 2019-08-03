@@ -62,7 +62,7 @@ class PopupController {
     updateCategoryButtonStates() {
         const track = this.currentlyPlayingStreamAction.track;
         const activeCategory = track.category;
-        if (activeCategory != undefined) {
+        if (activeCategory != null) {
             $('.category').removeClass('is-active')
             $('.category').addClass('is-outlined')
             $('#' + activeCategory.toLowerCase()).addClass('is-active');
@@ -96,7 +96,7 @@ class PopupController {
     }
 
     updateTrackReposter(reposter) {
-        if (reposter && reposter.name != null) {
+        if (reposter != null && reposter.name != null) {
             document.getElementById('track-reposter').innerHTML = reposter.name;
         } else if (reposter && reposter.url != null){
             document.getElementById('track-reposter').innerHTML = reposter.url;

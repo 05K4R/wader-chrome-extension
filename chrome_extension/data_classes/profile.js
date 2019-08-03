@@ -1,6 +1,6 @@
 class Profile {
     constructor(url, name, score) {
-        if (url == undefined) {
+        if (url == null) {
             throw new Error('Profile does not have all required values');
         }
 

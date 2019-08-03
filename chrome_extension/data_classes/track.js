@@ -1,6 +1,6 @@
 class Track {
     constructor(uploader, url, name, category) {
-        if (uploader == undefined || url == undefined) {
+        if (uploader == null || url == null) {
             throw new Error('Track does not have all required values');
         }
 

@@ -1,5 +1,9 @@
 class StreamAction {
     constructor(type, track) {
+        if (type == null || track == null) {
+            throw new Error('StreamAction does not have all required values');
+        }
+
         this.type = type;
         this.track = track;
     }

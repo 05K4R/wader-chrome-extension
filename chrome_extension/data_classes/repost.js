@@ -1,6 +1,6 @@
 class RepostAction extends StreamAction {
     constructor(track, time, reposter) {
-        if (track == undefined || time == undefined || reposter == undefined) {
+        if (track == null || time == null || reposter == null) {
             throw new Error('Repost does not have all required values');
         }
 
