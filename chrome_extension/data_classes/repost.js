@@ -1,4 +1,4 @@
-class RepostAction extends StreamAction {
+class Repost extends StreamAction {
     constructor(track, time, reposter) {
         if (track == null || time == null || reposter == null) {
             throw new Error('Repost does not have all required values');
@@ -10,7 +10,7 @@ class RepostAction extends StreamAction {
     }
 
     static fromJSON(json) {
-        return new RepostAction(Track.fromJSON(json.track), json.time, Profile.fromJSON(json.reposter));
+        return new Repost(Track.fromJSON(json.track), json.time, Profile.fromJSON(json.reposter));
     }
 
     asJSON() {

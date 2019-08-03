@@ -10,9 +10,9 @@ class StreamAction {
 
     static fromJSON(json) {
         if (json.type == 'UPLOAD') {
-            return UploadAction.fromJSON(json);
+            return Upload.fromJSON(json);
         } else if (json.type == 'REPOST') {
-            return RepostAction.fromJSON(json);
+            return Repost.fromJSON(json);
         }
     }
 

@@ -1,4 +1,4 @@
-class UploadAction extends StreamAction {
+class Upload extends StreamAction {
     constructor(track) {
         if (track == null) {
             throw new Error('Upload does not have all required values');
@@ -8,7 +8,7 @@ class UploadAction extends StreamAction {
     }
 
     static fromJSON(json) {
-        return new UploadAction(Track.fromJSON(json.track));
+        return new Upload(Track.fromJSON(json.track));
     }
 
     asJSON() {

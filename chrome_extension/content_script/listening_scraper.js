@@ -86,11 +86,11 @@ class ListeningScraper {
 
         const reposter = new Profile(reposterUrl, reposterName);
 
-        return new RepostAction(track, repostTimeInSeconds, reposter);
+        return new Repost(track, repostTimeInSeconds, reposter);
     }
 
     createUploadStreamActionFor(track) {
-        return new UploadAction(track);
+        return new Upload(track);
     }
 
     scrapeCurrentlyPlayingTrack() {
