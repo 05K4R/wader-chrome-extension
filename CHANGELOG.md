@@ -1,9 +1,9 @@
 # Changelog
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## Unreleased
+## 0.4.1 - 2019-08-04
 ### Fixed
-- Fixed extension hanging due to making too many backend requests.
+- Fixed extension hanging due to making too many requests to Firebase.
 
 ## 0.4.0 - 2019-08-03
 ### Added
