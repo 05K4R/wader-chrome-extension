@@ -7,6 +7,7 @@ class Repost extends StreamAction {
         super('REPOST', track);
         this.time = time;
         this.reposter = reposter;
+        this.id = reposter.id + ';' + time + ';' + track.id;
     }
 
     static fromJSON(json) {

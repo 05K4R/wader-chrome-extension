@@ -8,6 +8,7 @@ class Track {
         this.url = url;
         this.name = name;
         this.category = category;
+        this.id = uploader.id + ';' + url;
     }
 
     static fromJSON(json) {

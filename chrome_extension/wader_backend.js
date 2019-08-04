@@ -15,29 +15,41 @@ class WaderBackend {
 
     async updateProfile(profile) {
         await this.functions.updateProfile(profile);
-        const updatedProfile = await this.getObject('profiles', profile.url);
-        const profileScore = await this.getProfileScore(updatedProfile.url);
-        return new Profile(updatedProfile.url, updatedProfile.name, profileScore);
+        return this.getProfile(profile.id);
     }
 
     async updateTrack(track) {
         await this.functions.updateTrack(track);
-        const trackId = track.uploader.url + ';' + track.url;
-        const updatedTrack = await this.getObject('tracks', trackId);
-        const uploader = await this.updateProfile(track.uploader);
-        return new Track(uploader, updatedTrack.url, updatedTrack.name, updatedTrack.category);
+        return this.getTrack(track.id);
     }
 
     async updateRepost(repost) {
         await this.functions.updateRepost(repost);
-        const track = await this.updateTrack(repost.track);
-        const reposter = await this.updateProfile(repost.reposter);
-        return new Repost(track, repost.time, reposter);
+        return this.getRepost(repost.id);
     }
 
     async updateUpload(upload) {
-        const track = await this.updateTrack(upload.track);
+        const track = await this.getTrack(upload.track.id);
         return new Upload(track);
+    }
+
+    async getProfile(profileId) {
+        const profile = await this.getObject('profiles', profileId);
+        const profileScore = await this.getProfileScore(profileId);
+        return new Profile(profile.url, profile.name, profileScore);
+    }
+
+    async getTrack(trackId) {
+        const track = await this.getObject('tracks', trackId);
+        const uploader = await this.getProfile(track.uploader);
+        return new Track(uploader, track.url, track.name, track.category);
+    }
+
+    async getRepost(repostId) {
+        const repost = await this.getObject('reposts', repostId);
+        const track = await this.getTrack(repost.track);
+        const reposter = await this.getProfile(repost.reposter);
+        return new Repost(track, repost.time, reposter);
     }
 
     async objectExists(collectionName, objectId) {

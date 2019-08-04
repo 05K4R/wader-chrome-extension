@@ -7,6 +7,7 @@ class Profile {
         this.url = url;
         this.name = name;
         this.score = score;
+        this.id = url;
     }
 
     static fromJSON(json) {
