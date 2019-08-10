@@ -29,8 +29,8 @@ class WaderBackend {
     }
 
     async updateUpload(upload) {
-        const track = await this.getTrack(upload.track.id);
-        return new Upload(track);
+        await this.functions.updateTrack(upload.track);
+        return this.getUpload(upload.track.id);
     }
 
     async getProfile(profileId) {
@@ -50,6 +50,11 @@ class WaderBackend {
         const track = await this.getTrack(repost.track);
         const reposter = await this.getProfile(repost.reposter);
         return new Repost(track, repost.time, reposter);
+    }
+
+    async getUpload(trackId) {
+        const track = await this.getTrack(trackId);
+        return new Upload(track);
     }
 
     async objectExists(collectionName, objectId) {
