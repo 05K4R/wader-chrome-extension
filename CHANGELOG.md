@@ -1,7 +1,7 @@
 # Changelog
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## Unreleased
+## 0.4.2 - 2019-08-10
 ### Fixed
 - Tracks that appear in the steam in other ways than reposts are now properly recognized.
 
