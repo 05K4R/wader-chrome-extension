@@ -82,10 +82,13 @@ class PopupController {
     updateTrackReposter(reposter) {
         if (reposter != null && reposter.name != null) {
             document.getElementById('track-reposter').innerHTML = reposter.name;
-        } else if (reposter && reposter.url != null){
+            $('#track-reposter-section').show();
+        } else if (reposter && reposter.url != null) {
             document.getElementById('track-reposter').innerHTML = reposter.url;
+            $('#track-reposter-section').show();
         } else {
             document.getElementById('track-reposter').innerHTML = '';
+            $('#track-reposter-section').hide();
         }
         this.updateTrackReposterRating(reposter);
     }
@@ -93,26 +96,31 @@ class PopupController {
     updateTrackUploaderRating(uploader) {
         const score = uploader.score;
         if (score > 0) {
-            document.getElementById('track-uploader-rating').innerHTML = 'Good quality tracks, keep following!';
+            $('#track-uploader').removeClass();
+            $('#track-uploader').addClass('has-text-info');
         } else if (score < 0) {
-            document.getElementById('track-uploader-rating').innerHTML = 'Bad quality tracks, unfollow!';
+            $('#track-uploader').removeClass();
+            $('#track-uploader').addClass('has-text-danger');
         } else {
-            document.getElementById('track-uploader-rating').innerHTML = 'Keep categorizing tracks to get a rating';
+            $('#track-uploader').removeClass();
+            $('#track-uploader').addClass('has-text-black');
         }
     }
 
     updateTrackReposterRating(reposter) {
         if (reposter) {
             const score = reposter.score;
+            console.log(score);
             if (score > 0) {
-                document.getElementById('track-reposter-rating').innerHTML = 'Good quality tracks, keep following!';
+                $('#track-reposter').removeClass();
+                $('#track-reposter').addClass('has-text-info');
             } else if (score < 0) {
-                document.getElementById('track-reposter-rating').innerHTML = 'Bad quality tracks, unfollow!';
+                $('#track-reposter').removeClass();
+                $('#track-reposter').addClass('has-text-danger');
             } else {
-                document.getElementById('track-reposter-rating').innerHTML = 'Keep categorizing tracks to get a rating';
+                $('#track-reposter').removeClass();
+                $('#track-reposter').addClass('has-text-black');
             }
-        } else {
-            document.getElementById('track-reposter-rating').innerHTML = '';
         }
     }
 
