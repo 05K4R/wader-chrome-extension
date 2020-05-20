@@ -110,7 +110,6 @@ class PopupController {
     updateTrackReposterRating(reposter) {
         if (reposter) {
             const score = reposter.score;
-            console.log(score);
             if (score > 0) {
                 $('#track-reposter').removeClass();
                 $('#track-reposter').addClass('has-text-info');
