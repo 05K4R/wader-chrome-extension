@@ -1,9 +1,14 @@
 # Changelog
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## Unreleased
+### Changed
+- Hides the reposter section if the track isn't reposted.
+- Indicates profile score with colored name instead of text. Blue, black, and red is used for positive, neutral, and negative respectively.
+
 ## 0.4.2 - 2019-08-10
 ### Fixed
-- Tracks that appear in the steam in other ways than reposts are now properly recognized.
+- Tracks that appear in the stream in other ways than reposts are now properly recognized.
 
 ## 0.4.1 - 2019-08-04
 ### Fixed
