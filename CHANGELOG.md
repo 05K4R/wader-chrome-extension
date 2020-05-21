@@ -2,6 +2,9 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## Unreleased
+### Added
+- Wader now loads on other SoundCloud paths in addition to /stream.
+
 ### Changed
 - Hides the reposter section if the track isn't reposted.
 - Indicates profile score with colored name instead of text. Blue, black, and red is used for positive, neutral, and negative respectively.
