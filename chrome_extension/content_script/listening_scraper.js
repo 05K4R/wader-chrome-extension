@@ -61,9 +61,9 @@ class ListeningScraper {
             if (!isPlaylist && isRepost) {
                 allStreamActions.push(this.scrapeTrackRepostStreamActionFrom(streamActionElement));
             } else if (isPlaylist && !isRepost) {
-                allStreamActions.concat(this.scrapePlaylistPostStreamActionsFrom(streamActionElement));
+                allStreamActions.push(...this.scrapePlaylistPostStreamActionsFrom(streamActionElement));
             } else if (isPlaylist && isRepost) {
-                allStreamActions.concat(this.scrapePlaylistRepostStreamActionsFrom(streamActionElement));
+                allStreamActions.push(...this.scrapePlaylistRepostStreamActionsFrom(streamActionElement));
             }
         }
         return allStreamActions;
