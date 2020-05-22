@@ -1,11 +1,3 @@
-const CURRENTLY_PLAYING_TRACK_OBSERVER_TARGET = '.playbackSoundBadge';
-const CURRENTLY_PLAYING_TRACK_SELECTOR = '.playbackSoundBadge__titleLink';
-const STREAM_ACTIONS_SELECTOR = '.soundList__item';
-const REPOST_SELECTOR = '.soundContext__repost';
-const REPOST_TIME_SELECTOR = '.relativeTime';
-const REPOSTER_LINK_SELECTOR = '.soundContext__usernameLink';
-const TRACK_TITLE_SELECTOR = '.soundTitle__title';
-
 class ListeningScraper {
     constructor() {
         this.addCurrentlyPlayingTrackChangeObserver();
@@ -13,7 +5,7 @@ class ListeningScraper {
 
     addCurrentlyPlayingTrackChangeObserver() {
         new MutationObserver(this.updateCurrentlyPlayingTrack.bind(this))
-                .observe(document.querySelector(CURRENTLY_PLAYING_TRACK_OBSERVER_TARGET), {
+                .observe(document.querySelector('.playbackSoundBadge'), {
             subtree: true,
             childList: true
         });
@@ -58,30 +50,34 @@ class ListeningScraper {
     }
 
     scrapeStreamActions() {
-        const allStreamActionElements = document.querySelectorAll(STREAM_ACTIONS_SELECTOR);
+        const allStreamActionElements = document.querySelectorAll('.soundList__item');
         const allStreamActions = [];
 
         for (let i = 0; i < allStreamActionElements.length; i++) {
             const streamActionElement = allStreamActionElements[i];
-            const repostElements = streamActionElement.querySelectorAll(REPOST_SELECTOR);
-            const isARepost = repostElements.length === 1;
+            const isPlaylist = streamActionElement.querySelectorAll('.sound.playlist.streamContext').length === 1;
+            const isRepost = streamActionElement.querySelectorAll('.soundContext__repost').length === 1;
 
-            if (isARepost) {
-                allStreamActions.push(this.scrapeRepostStreamActionFrom(streamActionElement));
+            if (!isPlaylist && isRepost) {
+                allStreamActions.push(this.scrapeTrackRepostStreamActionFrom(streamActionElement));
+            } else if (isPlaylist && !isRepost) {
+                allStreamActions.push(this.scrapePlaylistPostStreamActionFrom(streamActionElement));
+            } else if (isPlaylist && isRepost) {
+                allStreamActions.push(this.scrapePlaylistRepostStreamActionFrom(streamActionElement));
             }
         }
         return allStreamActions;
     }
 
-    scrapeRepostStreamActionFrom(streamActionElement) {
-        const trackTitleElement = streamActionElement.querySelectorAll(TRACK_TITLE_SELECTOR)[0];
+    scrapeTrackRepostStreamActionFrom(streamActionElement) {
+        const trackTitleElement = streamActionElement.querySelectorAll('.soundTitle__title')[0];
         const track = this.parseTrack(trackTitleElement);
 
-        const reposterLinkElement = streamActionElement.querySelectorAll(REPOSTER_LINK_SELECTOR)[0];
+        const reposterLinkElement = streamActionElement.querySelectorAll('.soundContext__usernameLink')[0];
         const reposterUrl = reposterLinkElement.getAttribute('href').replace('/', '');
         const reposterName = reposterLinkElement.innerText;
 
-        const repostTimeElement = streamActionElement.querySelectorAll(REPOST_TIME_SELECTOR)[0];
+        const repostTimeElement = streamActionElement.querySelectorAll('.relativeTime')[0];
         const repostTimeInSeconds = (Date.parse(repostTimeElement.getAttribute('datetime')))/1000;
 
         const reposter = new Profile(reposterUrl, reposterName);
@@ -89,12 +85,20 @@ class ListeningScraper {
         return new Repost(track, repostTimeInSeconds, reposter);
     }
 
+    scrapePlaylistPostStreamActionFrom(streamActionElement) {
+
+    }
+
+    scrapePlaylistRepostStreamActionFrom(streamActionElement) {
+
+    }
+
     createUploadStreamActionFor(track) {
         return new Upload(track);
     }
 
     scrapeCurrentlyPlayingTrack() {
-        const currentlyPlayingTrackElement = document.querySelector(CURRENTLY_PLAYING_TRACK_SELECTOR);
+        const currentlyPlayingTrackElement = document.querySelector('.playbackSoundBadge__titleLink');
         if (currentlyPlayingTrackElement) {
             return this.parseTrack(currentlyPlayingTrackElement);
         }
