@@ -13,6 +13,12 @@ class StreamAction {
             return Upload.fromJSON(json);
         } else if (json.type == 'REPOST') {
             return Repost.fromJSON(json);
+        } else if (json.type == 'PLAYLIST_POST') {
+            return PlaylistPost.fromJSON(json);
+        } else if (json.type == 'PLAYLIST_REPOST') {
+            return PlaylistRepost.fromJSON(json);
+        } else {
+            throw new Error('Unrecognized action type: ' + json.type);
         }
     }
 
