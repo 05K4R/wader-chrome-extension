@@ -61,9 +61,9 @@ class ListeningScraper {
             if (!isPlaylist && isRepost) {
                 allStreamActions.push(this.scrapeTrackRepostStreamActionFrom(streamActionElement));
             } else if (isPlaylist && !isRepost) {
-                allStreamActions.push(this.scrapePlaylistPostStreamActionFrom(streamActionElement));
+                allStreamActions.concat(this.scrapePlaylistPostStreamActionsFrom(streamActionElement));
             } else if (isPlaylist && isRepost) {
-                allStreamActions.push(this.scrapePlaylistRepostStreamActionFrom(streamActionElement));
+                allStreamActions.concat(this.scrapePlaylistRepostStreamActionsFrom(streamActionElement));
             }
         }
         return allStreamActions;
@@ -85,11 +85,27 @@ class ListeningScraper {
         return new Repost(track, repostTimeInSeconds, reposter);
     }
 
-    scrapePlaylistPostStreamActionFrom(streamActionElement) {
+    scrapePlaylistPostStreamActionsFrom(streamActionElement) {
+        const posterLinkElement = streamActionElement.querySelectorAll('.soundContext__usernameLink')[0];
+        const posterUrl = posterLinkElement.getAttribute('href').replace('/', '');
+        const posterName = posterLinkElement.innerText;
+        const playlistPoster = new Profile(posterUrl, posterName);
 
+        const playlistElement = streamActionElement.querySelectorAll('.soundTitle__title')[0];
+        const playlistUrl = playlistElement.getAttribute('href').split('/')[3];
+        const playlist = new Playlist(playlistPoster, playlistUrl);
+
+        const playlistTrackActions = [];
+        const allTrackElements = streamActionElement.querySelectorAll('.compactTrackList__item');
+        allTrackElements.forEach(trackElement => {
+            const trackTitleElement = trackElement.querySelectorAll('.compactTrackListItem__trackTitle')[0];
+            const track = this.parseTrack(trackTitleElement);
+            playlistTrackActions.push(new PlaylistPost(track, playlist))
+        });
+        return playlistTrackActions;
     }
 
-    scrapePlaylistRepostStreamActionFrom(streamActionElement) {
+    scrapePlaylistRepostStreamActionsFrom(streamActionElement) {
 
     }
 
@@ -112,8 +128,12 @@ class ListeningScraper {
     }
 
     parseTrack(currentTrackTarget) {
-        // href attribute formatted as /uploaderUrl/trackUrl?in=playlist
-        const splitTrackLink = currentTrackTarget.getAttribute('href').split('?');
+        // href/data-permalik-path attribute formatted as /uploaderUrl/trackUrl?in=playlist
+        let trackLink = currentTrackTarget.getAttribute('href');
+        if (!trackLink) {
+            trackLink = currentTrackTarget.getAttribute('data-permalink-path');
+        }
+        const splitTrackLink = trackLink.split('?');
         const uploaderUrl = splitTrackLink[0].split('/')[1];
         const trackUrl = splitTrackLink[0].split('/')[2];
 
