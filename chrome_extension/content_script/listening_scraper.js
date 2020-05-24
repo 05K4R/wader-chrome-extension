@@ -97,7 +97,7 @@ class ListeningScraper {
 
         const playlistTrackActions = [];
         const allTrackElements = streamActionElement.querySelectorAll('.compactTrackList__item');
-        allTrackElements.forEach(trackElement => {
+        allTrackElements.forEach((trackElement) => {
             const trackTitleElement = trackElement.querySelectorAll('.compactTrackListItem__trackTitle')[0];
             const track = this.parseTrack(trackTitleElement);
             playlistTrackActions.push(new PlaylistPost(track, playlist));

@@ -40,7 +40,7 @@ class WaderBackend {
             url: playlist.url,
             poster: playlist.poster.id,
             tracks: []
-        }
+        };
         const existingPlaylist = await this.getPlaylist(playlist.id);
         if (existingPlaylist) {
             playlistData.tracks = existingPlaylist.tracks;
@@ -58,7 +58,7 @@ class WaderBackend {
         }
         const existingPlaylist = await this.getPlaylist(post.playlist.id);
         if (existingPlaylist) {
-            playlistData.tracks = [...(existingPlaylist.tracks).map(track => track.id), post.track.id];
+            playlistData.tracks = [...(existingPlaylist.tracks).map((track) => track.id), post.track.id];
         } else {
             playlistData.tracks = [post.track.id];
         }

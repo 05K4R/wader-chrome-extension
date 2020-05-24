@@ -19,7 +19,7 @@ class Playlist {
             poster: this.poster.asJSON(),
             url: this.url,
             tracks: this.tracks
-        }
+        };
     }
 
     async update(backend) {
