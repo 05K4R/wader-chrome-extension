@@ -14,6 +14,10 @@ class FirestoreConnection {
         return document.exists;
     }
 
+    async setObjectWithMerge(collectionName, object) {
+        return this.setFirebaseObject(collectionName, object, { merge: true });
+    }
+
     async getFirebaseObject(collectionName, objectId) {
         const userId = this.authenticator.getUserId();
         return this.db
@@ -22,6 +26,16 @@ class FirestoreConnection {
             .collection(collectionName)
             .doc(objectId)
             .get();
+    }
+
+    async setFirebaseObject(collectionName, object, options) {
+        const userId = this.authenticator.getUserId();
+        return this.db
+            .collection(this.getUserCollection())
+            .doc(userId)
+            .collection(collectionName)
+            .doc(object.id)
+            .set(object, options);
     }
 
     async runCloudFunction(functionName, args) {

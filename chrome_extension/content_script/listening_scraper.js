@@ -119,13 +119,16 @@ class ListeningScraper {
         const playlistUrl = playlistElement.getAttribute('href').split('/')[3];
         const playlist = new Playlist(playlistPoster, playlistUrl);
 
+        const repostTimeElement = streamActionElement.querySelectorAll('.relativeTime')[0];
+        const repostTimeInSeconds = (Date.parse(repostTimeElement.getAttribute('datetime')))/1000;
+
         const playlistTrackActions = [];
         const allTrackElements = streamActionElement.querySelectorAll('.compactTrackList__item');
         allTrackElements.forEach(trackElement => {
             const trackTitleElement = trackElement.querySelectorAll('.compactTrackListItem__trackTitle')[0];
             if (trackTitleElement) {
                 const track = this.parseTrack(trackTitleElement);
-                playlistTrackActions.push(new PlaylistRepost(track, playlist, playlistReposter));
+                playlistTrackActions.push(new PlaylistRepost(track, playlist, repostTimeInSeconds, playlistReposter));
             }
         });
         return playlistTrackActions;
