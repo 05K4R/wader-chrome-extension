@@ -19,7 +19,7 @@ class Profile {
             url: this.url,
             name: this.name,
             score: this.score,
-        }
+        };
     }
 
     async update(backend) {

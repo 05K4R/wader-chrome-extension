@@ -55,7 +55,7 @@ class WaderBackend {
             id: post.playlist.id,
             url: post.playlist.url,
             poster: post.playlist.poster.id
-        }
+        };
         const existingPlaylist = await this.getPlaylist(post.playlist.id);
         if (existingPlaylist) {
             playlistData.tracks = [...(existingPlaylist.tracks).map((track) => track.id), post.track.id];
@@ -75,7 +75,7 @@ class WaderBackend {
             reposter: repost.reposter.id,
             playlist: repost.playlist.id,
             time: repost.time
-        }
+        };
         await this.setObject('playlistReposts', playlistData);
         const playlist = await this.getPlaylist(repost.playlist.id);
         const reposter = await this.getProfile(repost.reposter.id);

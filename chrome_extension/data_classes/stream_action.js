@@ -26,6 +26,6 @@ class StreamAction {
         return {
             type: this.type,
             track: this.track.asJSON()
-        }
+        };
     }
 }

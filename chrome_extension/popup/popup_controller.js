@@ -124,9 +124,9 @@ class PopupController {
     }
 
     updateTrackCategory(track) {
-        $('.category').removeClass('is-active')
-        $('.category').removeClass('is-loading')
-        $('.category').addClass('is-outlined')
+        $('.category').removeClass('is-active');
+        $('.category').removeClass('is-loading');
+        $('.category').addClass('is-outlined');
         const activeCategory = track.category;
         if (activeCategory != null) {
             $('#' + activeCategory.toLowerCase()).addClass('is-active');

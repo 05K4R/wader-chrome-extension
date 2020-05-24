@@ -21,7 +21,7 @@ class Track {
             url: this.url,
             name: this.name,
             category: this.category
-        }
+        };
     }
 
     async update(backend) {
