@@ -1,11 +1,3 @@
-const CURRENTLY_PLAYING_TRACK_OBSERVER_TARGET = '.playbackSoundBadge';
-const CURRENTLY_PLAYING_TRACK_SELECTOR = '.playbackSoundBadge__titleLink';
-const STREAM_ACTIONS_SELECTOR = '.soundList__item';
-const REPOST_SELECTOR = '.soundContext__repost';
-const REPOST_TIME_SELECTOR = '.relativeTime';
-const REPOSTER_LINK_SELECTOR = '.soundContext__usernameLink';
-const TRACK_TITLE_SELECTOR = '.soundTitle__title';
-
 class ListeningScraper {
     constructor() {
         this.addCurrentlyPlayingTrackChangeObserver();
@@ -13,7 +5,7 @@ class ListeningScraper {
 
     addCurrentlyPlayingTrackChangeObserver() {
         new MutationObserver(this.updateCurrentlyPlayingTrack.bind(this))
-                .observe(document.querySelector(CURRENTLY_PLAYING_TRACK_OBSERVER_TARGET), {
+                .observe(document.querySelector('.playbackSoundBadge'), {
             subtree: true,
             childList: true
         });
@@ -58,35 +50,87 @@ class ListeningScraper {
     }
 
     scrapeStreamActions() {
-        const allStreamActionElements = document.querySelectorAll(STREAM_ACTIONS_SELECTOR);
+        const allStreamActionElements = document.querySelectorAll('.soundList__item');
         const allStreamActions = [];
 
         for (let i = 0; i < allStreamActionElements.length; i++) {
             const streamActionElement = allStreamActionElements[i];
-            const repostElements = streamActionElement.querySelectorAll(REPOST_SELECTOR);
-            const isARepost = repostElements.length === 1;
+            const isPlaylist = streamActionElement.querySelectorAll('.sound.playlist.streamContext').length === 1;
+            const isRepost = streamActionElement.querySelectorAll('.soundContext__repost').length === 1;
 
-            if (isARepost) {
-                allStreamActions.push(this.scrapeRepostStreamActionFrom(streamActionElement));
+            if (!isPlaylist && isRepost) {
+                allStreamActions.push(this.scrapeTrackRepostStreamActionFrom(streamActionElement));
+            } else if (isPlaylist && !isRepost) {
+                allStreamActions.push(...this.scrapePlaylistPostStreamActionsFrom(streamActionElement));
+            } else if (isPlaylist && isRepost) {
+                allStreamActions.push(...this.scrapePlaylistRepostStreamActionsFrom(streamActionElement));
             }
         }
         return allStreamActions;
     }
 
-    scrapeRepostStreamActionFrom(streamActionElement) {
-        const trackTitleElement = streamActionElement.querySelectorAll(TRACK_TITLE_SELECTOR)[0];
+    scrapeTrackRepostStreamActionFrom(streamActionElement) {
+        const trackTitleElement = streamActionElement.querySelectorAll('.soundTitle__title')[0];
         const track = this.parseTrack(trackTitleElement);
 
-        const reposterLinkElement = streamActionElement.querySelectorAll(REPOSTER_LINK_SELECTOR)[0];
-        const reposterUrl = reposterLinkElement.getAttribute('href').replace('/', '');
-        const reposterName = reposterLinkElement.innerText;
+        const reposter = this.scrapeActorProfileFromStreamAction(streamActionElement);
 
-        const repostTimeElement = streamActionElement.querySelectorAll(REPOST_TIME_SELECTOR)[0];
+        const repostTimeElement = streamActionElement.querySelectorAll('.relativeTime')[0];
         const repostTimeInSeconds = (Date.parse(repostTimeElement.getAttribute('datetime')))/1000;
 
-        const reposter = new Profile(reposterUrl, reposterName);
-
         return new Repost(track, repostTimeInSeconds, reposter);
+    }
+
+    scrapePlaylistPostStreamActionsFrom(streamActionElement) {
+        const playlistPoster = this.scrapeActorProfileFromStreamAction(streamActionElement);
+        const playlistUrl = this.scrapePlaylistUrlFromStreamAction(streamActionElement);
+        const playlist = new Playlist(playlistPoster, playlistUrl);
+
+        const playlistTrackActions = [];
+        const allTrackElements = streamActionElement.querySelectorAll('.compactTrackList__item');
+        allTrackElements.forEach((trackElement) => {
+            const trackTitleElement = trackElement.querySelectorAll('.compactTrackListItem__trackTitle')[0];
+            const track = this.parseTrack(trackTitleElement);
+            playlistTrackActions.push(new PlaylistPost(track, playlist));
+        });
+        return playlistTrackActions;
+    }
+
+    scrapePlaylistRepostStreamActionsFrom(streamActionElement) {
+        const playlistReposter = this.scrapeActorProfileFromStreamAction(streamActionElement);
+
+        const posterLinkElement = streamActionElement.querySelectorAll('.soundTitle__username')[0];
+        const posterUrl = posterLinkElement.getAttribute('href').replace('/', '');
+        const playlistPoster = new Profile(posterUrl);
+
+        const playlistUrl = this.scrapePlaylistUrlFromStreamAction(streamActionElement);
+        const playlist = new Playlist(playlistPoster, playlistUrl);
+
+        const repostTimeElement = streamActionElement.querySelectorAll('.relativeTime')[0];
+        const repostTimeInSeconds = (Date.parse(repostTimeElement.getAttribute('datetime')))/1000;
+
+        const playlistTrackActions = [];
+        const allTrackElements = streamActionElement.querySelectorAll('.compactTrackList__item');
+        allTrackElements.forEach((trackElement) => {
+            const trackTitleElement = trackElement.querySelectorAll('.compactTrackListItem__trackTitle')[0];
+            if (trackTitleElement) {
+                const track = this.parseTrack(trackTitleElement);
+                playlistTrackActions.push(new PlaylistRepost(track, playlist, repostTimeInSeconds, playlistReposter));
+            }
+        });
+        return playlistTrackActions;
+    }
+
+    scrapeActorProfileFromStreamAction(streamActionElement) {
+        const profileLinkElement = streamActionElement.querySelectorAll('.soundContext__usernameLink')[0];
+        const profileUrl = profileLinkElement.getAttribute('href').replace('/', '');
+        const profileName = profileLinkElement.innerText;
+        return new Profile(profileUrl, profileName);
+    }
+
+    scrapePlaylistUrlFromStreamAction(streamActionElement) {
+        const playlistElement = streamActionElement.querySelectorAll('.soundTitle__title')[0];
+        return playlistElement.getAttribute('href').split('/')[3];
     }
 
     createUploadStreamActionFor(track) {
@@ -94,7 +138,7 @@ class ListeningScraper {
     }
 
     scrapeCurrentlyPlayingTrack() {
-        const currentlyPlayingTrackElement = document.querySelector(CURRENTLY_PLAYING_TRACK_SELECTOR);
+        const currentlyPlayingTrackElement = document.querySelector('.playbackSoundBadge__titleLink');
         if (currentlyPlayingTrackElement) {
             return this.parseTrack(currentlyPlayingTrackElement);
         }
@@ -108,8 +152,12 @@ class ListeningScraper {
     }
 
     parseTrack(currentTrackTarget) {
-        // href attribute formatted as /uploaderUrl/trackUrl?in=playlist
-        const splitTrackLink = currentTrackTarget.getAttribute('href').split('?');
+        // href/data-permalik-path attribute formatted as /uploaderUrl/trackUrl?in=playlist
+        let trackLink = currentTrackTarget.getAttribute('href');
+        if (!trackLink) {
+            trackLink = currentTrackTarget.getAttribute('data-permalink-path');
+        }
+        const splitTrackLink = trackLink.split('?');
         const uploaderUrl = splitTrackLink[0].split('/')[1];
         const trackUrl = splitTrackLink[0].split('/')[2];
 

@@ -4,6 +4,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## Unreleased
 ### Added
 - Wader now loads on other SoundCloud paths in addition to /stream.
+- Playlist posts and reposts are now also counted for profile scores.
 
 ### Changed
 - Hides the reposter section if the track isn't reposted.

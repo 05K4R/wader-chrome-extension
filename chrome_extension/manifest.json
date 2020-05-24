@@ -33,7 +33,10 @@
 				"data_classes/repost.js",
 				"data_classes/upload.js",
 				"data_classes/track.js",
-				"data_classes/profile.js"
+				"data_classes/profile.js",
+				"data_classes/playlist.js",
+				"data_classes/playlist_post.js",
+				"data_classes/playlist_repost.js"
 			],
 			"run_at": "document_end"
 		}

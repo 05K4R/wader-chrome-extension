@@ -17,11 +17,11 @@ class Track {
 
     asJSON() {
         return {
-            uploader: this.uploader,
+            uploader: this.uploader.asJSON(),
             url: this.url,
             name: this.name,
             category: this.category
-        }
+        };
     }
 
     async update(backend) {
