@@ -83,9 +83,7 @@ class ListeningScraper {
 
     scrapePlaylistPostStreamActionsFrom(streamActionElement) {
         const playlistPoster = this.scrapeActorProfileFromStreamAction(streamActionElement);
-
-        const playlistElement = streamActionElement.querySelectorAll('.soundTitle__title')[0];
-        const playlistUrl = playlistElement.getAttribute('href').split('/')[3];
+        const playlistUrl = this.scrapePlaylistUrlFromStreamAction(streamActionElement);
         const playlist = new Playlist(playlistPoster, playlistUrl);
 
         const playlistTrackActions = [];
@@ -105,8 +103,7 @@ class ListeningScraper {
         const posterUrl = posterLinkElement.getAttribute('href').replace('/', '');
         const playlistPoster = new Profile(posterUrl);
 
-        const playlistElement = streamActionElement.querySelectorAll('.soundTitle__title')[0];
-        const playlistUrl = playlistElement.getAttribute('href').split('/')[3];
+        const playlistUrl = this.scrapePlaylistUrlFromStreamAction(streamActionElement);
         const playlist = new Playlist(playlistPoster, playlistUrl);
 
         const repostTimeElement = streamActionElement.querySelectorAll('.relativeTime')[0];
@@ -129,6 +126,11 @@ class ListeningScraper {
         const profileUrl = profileLinkElement.getAttribute('href').replace('/', '');
         const profileName = profileLinkElement.innerText;
         return new Profile(profileUrl, profileName);
+    }
+
+    scrapePlaylistUrlFromStreamAction(streamActionElement) {
+        const playlistElement = streamActionElement.querySelectorAll('.soundTitle__title')[0];
+        return playlistElement.getAttribute('href').split('/')[3];
     }
 
     createUploadStreamActionFor(track) {
