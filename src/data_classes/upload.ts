@@ -1,5 +1,5 @@
 class Upload extends StreamAction {
-    constructor(track) {
+    constructor(track: Track) {
         if (track == null) {
             throw new Error('Upload does not have all required values');
         }
@@ -7,15 +7,15 @@ class Upload extends StreamAction {
         super('UPLOAD', track);
     }
 
-    static fromJSON(json) {
+    static fromJSON(json: any) {
         return new Upload(Track.fromJSON(json.track));
     }
 
-    asJSON() {
+    asJSON(): any {
         return super.asJSON();
     }
 
-    async update(backend) {
+    async update(backend: WaderBackend) {
         return backend.updateUpload(this);
     }
 }

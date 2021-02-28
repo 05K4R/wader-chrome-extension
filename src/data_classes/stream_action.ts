@@ -1,5 +1,8 @@
 class StreamAction {
-    constructor(type, track) {
+    type: string;
+    track: Track;
+
+    constructor(type: string, track: Track) {
         if (type == null || track == null) {
             throw new Error('StreamAction does not have all required values');
         }
@@ -8,7 +11,7 @@ class StreamAction {
         this.track = track;
     }
 
-    static fromJSON(json) {
+    static fromJSON(json: any) {
         if (json.type === 'UPLOAD') {
             return Upload.fromJSON(json);
         } else if (json.type === 'REPOST') {
@@ -22,7 +25,7 @@ class StreamAction {
         }
     }
 
-    asJSON() {
+    asJSON(): any {
         return {
             type: this.type,
             track: this.track.asJSON()

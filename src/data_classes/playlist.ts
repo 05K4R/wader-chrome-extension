@@ -1,5 +1,10 @@
 class Playlist {
-    constructor(poster, url, tracks) {
+    poster: Profile;
+    url: string;
+    tracks: Array<Track>;
+    id: string;
+
+    constructor(poster: Profile, url: string, tracks: Array<Track>) {
         if (poster == null || url == null) {
             throw new Error('Playlist does not have all required values');
         }
@@ -10,11 +15,11 @@ class Playlist {
         this.id = poster.id + ';' + url;
     }
 
-    static fromJSON(json) {
+    static fromJSON(json: any) {
         return new Playlist(Profile.fromJSON(json.poster), json.url, json.tracks);
     }
 
-    asJSON() {
+    asJSON(): any {
         return {
             poster: this.poster.asJSON(),
             url: this.url,
@@ -22,7 +27,7 @@ class Playlist {
         };
     }
 
-    async update(backend) {
+    async update(backend: WaderBackend) {
         return backend.updatePlaylist(this);
     }
 }

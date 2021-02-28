@@ -1,0 +1,29 @@
+{
+  "name": "wader-chrome-extension",
+  "version": "0.5.0",
+  "main": "lib/wader.js",
+  "scripts": {
+    "clean": "rimraf lib/",
+    "copy-files": "copyfiles -u 1 src/**/*.html src/**/*.css src/**/*.json src/**/*.png src/wader.html lib/src",
+    "test": "npm run build && mocha lib/test/**/*.js",
+    "build": "npm run clean && tsc && npm run copy-files"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/05K4R/wader-chrome-extension.git"
+  },
+  "author": "Oskar Kärrman",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/05K4R/wader-chrome-extension/issues"
+  },
+  "homepage": "https://github.com/05K4R/wader-chrome-extension#readme",
+  "devDependencies": {
+    "@types/mocha": "^8.2.1",
+    "@types/node": "^14.14.31",
+    "copyfiles": "^2.4.1",
+    "mocha": "^8.3.0",
+    "rimraf": "^3.0.2",
+    "typescript": "^4.2.2"
+  }
+}
