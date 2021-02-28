@@ -1,12 +1,12 @@
 class Wader {
     constructor() {
         firebase.initializeApp({
-            apiKey: 'AIzaSyCr4jpWCOzPF1dDLK7M0UclG6aks5XBUOw',
-            authDomain: 'wader-development.firebaseapp.com',
-            databaseURL: 'https://wader-development.firebaseio.com',
-            projectId: 'wader-development',
-            storageBucket: 'wader-development.appspot.com',
-            messagingSenderId: '331883577665'
+            apiKey: '[Your apiKey]',
+            authDomain: '[Your authDomain]',
+            databaseURL: '[Your databaseURL]',
+            projectId: '[Your projectId]',
+            storageBucket: '[Your storageBucket]',
+            messagingSenderId: '[Your messagingSenderId]'
         });
 
         this.backend = new WaderBackend();
