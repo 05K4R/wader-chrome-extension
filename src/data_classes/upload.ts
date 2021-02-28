@@ -11,7 +11,7 @@ class Upload extends StreamAction {
         return new Upload(Track.fromJSON(json.track));
     }
 
-    asJSON() {
+    asJSON(): any {
         return super.asJSON();
     }
 

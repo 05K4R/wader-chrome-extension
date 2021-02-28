@@ -1,5 +1,11 @@
 class Track {
-    constructor(uploader, url, name, category) {
+    uploader: Profile;
+    url: string;
+    name: string;
+    category: string;
+    id: string;
+
+    constructor(uploader: Profile, url: string, name: string, category: string) {
         if (uploader == null || url == null) {
             throw new Error('Track does not have all required values');
         }
@@ -11,11 +17,11 @@ class Track {
         this.id = uploader.id + ';' + url;
     }
 
-    static fromJSON(json) {
+    static fromJSON(json: any) {
         return new Track(Profile.fromJSON(json.uploader), json.url, json.name, json.category);
     }
 
-    asJSON() {
+    asJSON(): any {
         return {
             uploader: this.uploader.asJSON(),
             url: this.url,
@@ -24,7 +30,7 @@ class Track {
         };
     }
 
-    async update(backend) {
+    async update(backend: WaderBackend) {
         return backend.updateTrack(this);
     }
 }

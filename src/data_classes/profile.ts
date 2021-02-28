@@ -1,5 +1,10 @@
 class Profile {
-    constructor(url, name, score) {
+    url: string;
+    name: string;
+    score: number;
+    id: string;
+
+    constructor(url: string, name: string, score: number) {
         if (url == null) {
             throw new Error('Profile does not have all required values');
         }
@@ -10,11 +15,11 @@ class Profile {
         this.id = url;
     }
 
-    static fromJSON(json) {
+    static fromJSON(json: any) {
         return new Profile(json.url, json.name, json.score);
     }
 
-    asJSON() {
+    asJSON(): any {
         return {
             url: this.url,
             name: this.name,
@@ -22,7 +27,7 @@ class Profile {
         };
     }
 
-    async update(backend) {
+    async update(backend: WaderBackend) {
         return backend.updateProfile(this);
     }
 }
