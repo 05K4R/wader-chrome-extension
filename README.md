@@ -8,4 +8,4 @@ Preview version available at the  [Chrome Web Store](https://chrome.google.com/w
 
 ## Set up
 1. Build the project once with 'npm run build' (this should create a lib/ folder).
-2. Load unpacked extension in Chrome and choose the lib/ folder.
+2. Load unpacked extension in Chrome and choose the lib/src folder.
