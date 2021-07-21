@@ -3,7 +3,7 @@
 
 	"name": "Wader",
 	"description": "Categorize tracks posted or reposted by profiles you follow on SoundCloud.",
-	"version": "0.5.1",
+	"version": "0.5.2",
 
 	"icons": {
 		"16": "images/wader-16.png",

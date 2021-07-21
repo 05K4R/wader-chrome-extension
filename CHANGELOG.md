@@ -1,9 +1,13 @@
 # Changelog
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## 0.5.2 - 2021-07-21
+### Fixed
+- Use correct Firebase project in package.
+
 ## 0.5.1 - 2021-07-19
 ### Fixed
-- Remove unused identity permission
+- Remove unused identity permission.
 
 ## 0.5.0 - 2020-05-25
 ### Added
