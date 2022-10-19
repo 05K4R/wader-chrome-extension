@@ -1,6 +1,9 @@
 # Changelog
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## Unreleased
+- Updated the icon to a fresh one, thanks @NangiDev!
+
 ## 0.5.2 - 2021-07-21
 ### Fixed
 - Use correct Firebase project in package.
